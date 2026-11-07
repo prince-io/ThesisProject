@@ -1,0 +1,26 @@
+# Datasets and full run artifacts
+data/
+runs/
+
+# Model weights and exports
+*.pt
+*.pth
+*.onnx
+*.engine
+*.torchscript
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+
+# Reference PDFs are not committed
+ref/*.pdf
+
+# OS / editors
+.DS_Store
+Thumbs.db
