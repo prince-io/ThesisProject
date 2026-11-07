@@ -17,7 +17,7 @@ Hold YAML configs for datasets, models, training, and evaluation.
 
 ## Work Guidance
 
-- Dataset configs exist for `adverse16k`; training/evaluation configs are not written yet.
+- Dataset configs exist for `adverse16k`; `train/baseline.yaml` defines the YOLOv8n reference protocol.
 
 ## Verification
 
@@ -26,3 +26,4 @@ Hold YAML configs for datasets, models, training, and evaluation.
 ## Child DOX Index
 
 - `datasets/AGENTS.md` — dataset path and class-name contracts.
+- `train/AGENTS.md` — training hyperparameter contracts.

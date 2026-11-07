@@ -9,7 +9,8 @@
 - Target architecture (proposed): YOLO-LiteViT-WG — YOLOv8n backbone + linear-attention ViT at neck P4/P5 + lightweight weather channel gate.
 - Hard constraint: train stably at 640x640 on an RTX 3050 6GB (batch 4, AMP).
 - `thesis/` is the curated source of truth for the final thesis document. `ref/` is a non-authoritative inbox of ideas, suggestions, and papers. `manuscript/` is the derived LaTeX write-up.
-- Dataset pipeline is implemented: `adverse16k` (16k images, 4 conditions, 5 classes) from ACDC + DAWN + BDD100K + RTTS. Model/training implementation has not started; methodology details are deferred until modeling begins.
+- Dataset pipeline is implemented: `adverse16k` (16k images, 4 conditions, 5 classes) from ACDC + DAWN + BDD100K + RTTS.
+- Baseline training/evaluation harness is implemented; YOLOv8n baseline results are pending. The proposed LiteViT/weather-gate model has not started.
 
 ## Core Contract
 
@@ -105,6 +106,10 @@ Default section order:
 - Dataset verify: `.venv/bin/python scripts/verify_adverse16k.py --root . --out data/processed/adverse16k --report runs/dataset_checks/adverse16k --require-independent --checksums`.
 - Dataset audit: `.venv/bin/python scripts/audit_adverse16k.py --root . --out data/processed/adverse16k --report runs/dataset_checks/adverse16k`.
 - ACDC test prep: `.venv/bin/python scripts/prepare_acdc_test.py --root . --out data/unlabeled/acdc_test --report runs/dataset_checks/acdc_test --force`.
+- Baseline train: `.venv/bin/python scripts/train.py --config configs/train/baseline.yaml --name baseline_yolov8n_seed42`.
+- Eval subsets: `.venv/bin/python scripts/make_subsets.py --manifest data/processed/adverse16k/manifest.csv --out data/processed/adverse16k/subsets`.
+- Evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/baseline_yolov8n_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/baseline_yolov8n_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/baseline`.
+- Document: `.venv/bin/python scripts/document_results.py --train-run runs/train/baseline_yolov8n_seed42 --eval-run runs/eval/baseline_yolov8n_seed42`.
 - `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 
 ## Child DOX Index

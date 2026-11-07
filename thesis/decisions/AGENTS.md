@@ -30,3 +30,4 @@ Record durable thesis decisions as append-only ADRs.
 - `ADR-0003-python-pytorch-stack.md`
 - `ADR-0004-adverse16k-dataset.md`
 - `ADR-0005-sequence-aware-splits.md`
+- `ADR-0006-baseline-protocol.md`

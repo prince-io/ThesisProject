@@ -16,7 +16,8 @@ Hold thin CLI entrypoints for training, evaluation, export, and data preparation
 
 ## Work Guidance
 
-- (none yet)
+- `build_adverse16k.py`, `verify_adverse16k.py`, `audit_adverse16k.py`, `prepare_acdc_test.py` — dataset.
+- `train.py`, `make_subsets.py`, `evaluate.py`, `document_results.py`, `export.py` — baseline training/evaluation.
 
 ## Verification
 

@@ -19,7 +19,8 @@ Hold the `litevit` Python package: backbone/neck/head modules, weather gating, d
 
 ## Work Guidance
 
-- Dataset preparation is implemented (`litevit/datasets/`); model and training code has not started.
+- Dataset preparation and the training/evaluation harness are implemented.
+- The proposed model (`LiteViT`, weather gate) has not started.
 - Add modules one concern at a time.
 - Add a test in `tests/` for each new public behavior.
 
@@ -32,3 +33,4 @@ Hold the `litevit` Python package: backbone/neck/head modules, weather gating, d
 ## Child DOX Index
 
 - `litevit/datasets/AGENTS.md` — dataset loaders, class mapping, split policy, and build/verify entrypoints.
+- `litevit/training/AGENTS.md` — training, subset generation, evaluation, and run metadata.

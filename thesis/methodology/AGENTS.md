@@ -10,13 +10,14 @@ Hold the validated approach: architecture, training strategy, and design rationa
 
 ## Local Contracts
 
-- No content until implementation starts.
-- When populated, each doc carries YAML front matter and cites its sources.
+- Content may be added as implementation proceeds.
+- Each doc carries YAML front matter and cites its sources.
 - Describe the method, not measured outcomes; results belong in `../results/` and `../findings/`.
 
 ## Work Guidance
 
-- (empty until implementation)
+- `training.md` records the baseline training/evaluation protocol.
+- Add architecture/methodology docs as implementation proceeds.
 
 ## Verification
 

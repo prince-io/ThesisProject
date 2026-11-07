@@ -56,6 +56,42 @@ Built from ACDC + DAWN + BDD100K + RTTS as an **independent copy** with
 The unlabeled **ACDC test** set (`data/unlabeled/acdc_test`, 2,000 images) is for
 demos and final qualitative testing; its ground truth is withheld by ACDC.
 
+## Baseline training (Stage 2A)
+
+```bash
+# 1. Smoke test (1 epoch)
+.venv/bin/python scripts/train.py \
+  --config configs/train/baseline.yaml \
+  --name smoke_yolov8n --epochs 1
+
+# 2. Full baseline (100 epochs)
+.venv/bin/python scripts/train.py \
+  --config configs/train/baseline.yaml \
+  --name baseline_yolov8n_seed42
+
+# 3. Evaluate val + test, per condition/source, with figures
+.venv/bin/python scripts/evaluate.py \
+  --weights runs/train/baseline_yolov8n_seed42/weights/best.pt \
+  --data configs/datasets/adverse16k.yaml \
+  --splits val test \
+  --out runs/eval/baseline_yolov8n_seed42 \
+  --subsets data/processed/adverse16k/subsets \
+  --figures-dir thesis/results/figures/baseline
+
+# 4. Generate curated thesis records
+.venv/bin/python scripts/document_results.py \
+  --train-run runs/train/baseline_yolov8n_seed42 \
+  --eval-run runs/eval/baseline_yolov8n_seed42
+
+# 5. Optional export
+.venv/bin/python scripts/export.py \
+  --weights runs/train/baseline_yolov8n_seed42/weights/best.pt \
+  --format onnx
+```
+
+Protocol: YOLOv8n, 640, batch 4, AMP, `nbs=8`, AdamW 2e-4 + cosine, 100 epochs,
+seed 42, `cls_pw=0.5`. See `thesis/decisions/ADR-0006-baseline-protocol.md`.
+
 ## Conventions
 
 - Every durable decision is an append-only ADR in `thesis/decisions/`.
