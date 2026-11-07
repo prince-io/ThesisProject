@@ -14,7 +14,7 @@ Hold the curated, authoritative project knowledge used to draft the final thesis
 - Field separation:
   - `methodology/` — approach, architecture, design rationale (empty until implementation).
   - `decisions/` — append-only, dated ADRs (`ADR-NNNN-slug.md`); never delete, mark superseded.
-  - `experiments/` — curated run records: objective, setup, config, seed, run ID.
+  - `experiments/` — curated dataset-preparation and run records: setup, config, seed, run ID.
   - `results/` — facts only: metrics and tables tied to a run ID.
   - `findings/` — interpretation of results, lessons, conclusions.
   - `related-work/` — curated literature synthesis with citations.

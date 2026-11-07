@@ -17,7 +17,7 @@ Hold YAML configs for datasets, models, training, and evaluation.
 
 ## Work Guidance
 
-- (none yet)
+- Dataset configs exist for `adverse16k`; training/evaluation configs are not written yet.
 
 ## Verification
 
@@ -25,4 +25,4 @@ Hold YAML configs for datasets, models, training, and evaluation.
 
 ## Child DOX Index
 
-- (none)
+- `datasets/AGENTS.md` — dataset path and class-name contracts.

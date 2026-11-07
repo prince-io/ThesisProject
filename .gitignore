@@ -23,8 +23,14 @@ dist/
 .coverage
 htmlcov/
 
-# Reference PDFs are not committed
+# Reference PDFs and raw datasets are not committed
 ref/*.pdf
+ref/*.zip
+ref/*.tar
+ref/acdc/
+ref/bdd100k/
+ref/dawn/
+ref/rtts/
 
 # OS / editors
 .DS_Store

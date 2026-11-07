@@ -1,8 +1,8 @@
-# experiments/ — Curated Run Records
+# experiments/ — Curated Dataset and Run Records
 
 ## Purpose
 
-Hold curated records of experiments: what was run and under which conditions.
+Hold curated records of dataset preparation and experiments: what was built/run and under which conditions.
 
 ## Ownership
 
@@ -10,14 +10,15 @@ Hold curated records of experiments: what was run and under which conditions.
 
 ## Local Contracts
 
-- One record per experiment, YAML front matter (`title`, `status`, `date`, `sources`).
-- Include objective, config path, seed, dataset, hardware, and a run ID pointing to `runs/<id>/`.
+- One record per dataset build or experiment, YAML front matter (`title`, `status`, `date`, `sources`).
+- Dataset records include sources, counts, class map, split policy, and the verification report path.
+- Run records include objective, config path, seed, dataset, hardware, and a run ID pointing to `runs/<id>/`.
 - Do not paste raw logs or full metric dumps; link them.
 - Do not include interpretation; that belongs in `../findings/`.
 
 ## Work Guidance
 
-- (empty until implementation)
+- `dataset-adverse16k.md` records the current benchmark; run records are pending model implementation.
 
 ## Verification
 

@@ -28,3 +28,4 @@ Record durable thesis decisions as append-only ADRs.
 - `ADR-0001-knowledge-architecture.md`
 - `ADR-0002-yolo-litevit-wg-architecture.md`
 - `ADR-0003-python-pytorch-stack.md`
+- `ADR-0004-adverse16k-dataset.md`

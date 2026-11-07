@@ -5,11 +5,11 @@
 
 ## Project
 
-- B.Tech final-year thesis: lightweight object detection robust to adverse weather (rain, fog, snow, low light).
+- B.Tech final-year thesis: lightweight object detection robust to adverse weather (fog, rain, snow, night).
 - Target architecture (proposed): YOLO-LiteViT-WG — YOLOv8n backbone + linear-attention ViT at neck P4/P5 + lightweight weather channel gate.
 - Hard constraint: train stably at 640x640 on an RTX 3050 6GB (batch 4, AMP).
 - `thesis/` is the curated source of truth for the final thesis document. `ref/` is a non-authoritative inbox of ideas, suggestions, and papers. `manuscript/` is the derived LaTeX write-up.
-- Implementation has not started. Methodology details are deferred until implementation begins.
+- Dataset pipeline is implemented: `adverse16k` (16k images, 4 conditions, 5 classes) from ACDC + DAWN + BDD100K + RTTS. Model/training implementation has not started; methodology details are deferred until modeling begins.
 
 ## Core Contract
 
@@ -88,8 +88,9 @@ Default section order:
 - Keep full raw artifacts and curated thesis knowledge separate: full outputs live in `runs/`, curated summaries in `thesis/experiments` and `thesis/results`.
 - Record every important decision as an append-only, dated ADR in `thesis/decisions/` (never delete; mark superseded).
 - Curated docs carry YAML front matter: `title`, `status` (`draft` | `validated` | `superseded`), `date`, `sources`.
-- Do not commit reference PDFs; `ref/*.pdf` stays untracked.
-- Do not add methodology content until implementation starts.
+- Do not commit reference PDFs or raw datasets; `ref/*.pdf`, archives, and raw dataset folders stay untracked.
+- Raw datasets under `ref/` are inputs and are retained for now. Processed benchmark and ACDC test copies under `data/` are independent (no hardlinks).
+- Do not add methodology content until model implementation starts.
 - Draft the final thesis from `thesis/`; output to `manuscript/`.
 - Ask the user for approval before every git commit; never commit unprompted.
 - Use plain, simple commit messages that are easy to understand.
@@ -98,8 +99,11 @@ Default section order:
 
 - Python 3.12 virtualenv at `.venv/` (gitignored).
 - PyTorch 2.14.1 + torchvision 0.29.1, CUDA 13.0 wheels; RTX 3050 Laptop 6 GB (compute 8.6).
-- Dependencies declared in `pyproject.toml`; install with `.venv/bin/pip install -e ".[dev]"`.
+- Dependencies declared in `pyproject.toml`; install with `.venv/bin/pip install -e ".[dev,datasets]"`.
 - Run tooling via `.venv/bin/` (`ruff`, `pytest`).
+- Dataset build: `.venv/bin/python scripts/build_adverse16k.py --root . --out data/processed/adverse16k --force --copy-images`.
+- Dataset verify: `.venv/bin/python scripts/verify_adverse16k.py --root . --out data/processed/adverse16k --report runs/dataset_checks/adverse16k --require-independent --checksums`.
+- ACDC test prep: `.venv/bin/python scripts/prepare_acdc_test.py --root . --out data/unlabeled/acdc_test --report runs/dataset_checks/acdc_test --force`.
 - `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 
 ## Child DOX Index
