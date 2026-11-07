@@ -91,6 +91,8 @@ Default section order:
 - Do not commit reference PDFs; `ref/*.pdf` stays untracked.
 - Do not add methodology content until implementation starts.
 - Draft the final thesis from `thesis/`; output to `manuscript/`.
+- Ask the user for approval before every git commit; never commit unprompted.
+- Use plain, simple commit messages that are easy to understand.
 
 ## Planned Structure
 
