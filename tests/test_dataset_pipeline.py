@@ -1,4 +1,8 @@
-from litevit.datasets.build import SOURCE_TARGETS
+from pathlib import Path
+
+from PIL import Image, ImageDraw
+
+from litevit.datasets.build import SOURCE_TARGETS, _assign_sequence_splits
 from litevit.datasets.common import (
     ACDC_MAP,
     BDD_MAP,
@@ -6,7 +10,9 @@ from litevit.datasets.common import (
     DAWN_MAP,
     RTTS_MAP,
     Box,
+    Sample,
     bdd_condition,
+    dhash_image,
 )
 
 
@@ -18,8 +24,50 @@ def test_class_maps_merge_truck_and_rider() -> None:
     assert BDD_MAP["rider"] == BDD_MAP["pedestrian"]
 
 
+def test_bdd_legacy_aliases() -> None:
+    assert BDD_MAP["person"] == BDD_MAP["pedestrian"]
+    assert BDD_MAP["bike"] == BDD_MAP["bicycle"]
+    assert BDD_MAP["motor"] == BDD_MAP["motorcycle"]
+
+
 def test_rtts_five_classes() -> None:
     assert set(RTTS_MAP.values()) == set(range(len(CLASS_NAMES)))
+
+
+def test_sequence_assignment_keeps_sequences_whole() -> None:
+    samples = [
+        Sample(
+            source="acdc",
+            source_split="train",
+            condition="fog",
+            image_path=Path("x.jpg"),
+            width=10,
+            height=10,
+            boxes=[],
+            image_id=f"img{index}",
+            sequence_id=f"seq{index % 3}",
+        )
+        for index in range(12)
+    ]
+    mapping = _assign_sequence_splits(samples, 42)
+    assert set(mapping.values()) <= {"train", "val", "test"}
+    assert len(mapping) == 3
+    assert mapping == _assign_sequence_splits(samples, 42)
+
+
+def test_dhash_identical_and_inverted_patterns(tmp_path: Path) -> None:
+    first = tmp_path / "first.png"
+    second = tmp_path / "second.png"
+    inverted = tmp_path / "inverted.png"
+    for path, flip in ((first, False), (second, False), (inverted, True)):
+        image = Image.new("L", (32, 24), 0)
+        draw = ImageDraw.Draw(image)
+        for start in range(0, 32, 4):
+            if bool((start // 4) % 2) ^ flip:
+                draw.rectangle([start, 0, start + 3, 23], fill=255)
+        image.save(path)
+    assert dhash_image(first) == dhash_image(second)
+    assert dhash_image(first) != dhash_image(inverted)
 
 
 def test_bdd_condition_is_exclusive() -> None:

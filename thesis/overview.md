@@ -29,7 +29,7 @@ Python 3.12 + PyTorch 2.14.1 (CUDA 13.0) + torchvision + Ultralytics + timm/eino
 
 ## Dataset
 
-`adverse16k`: 16,000 images, 4,000 per condition (fog, rain, snow, night), 5 classes (`person, car, bus, bicycle, motorcycle`), split 12,800/1,600/1,600. Built from ACDC + DAWN + BDD100K + RTTS as an independent copy. A separate 2,000-image unlabeled ACDC test set is kept for demos and final qualitative testing. See `experiments/dataset-adverse16k.md` and `decisions/ADR-0004-adverse16k-dataset.md`.
+`adverse16k`: 16,000 images, 4,000 per condition (fog, rain, snow, night), 5 classes (`person, car, bus, bicycle, motorcycle`), split 12,800/1,600/1,600. Built from ACDC + DAWN + BDD100K + RTTS as an independent copy with sequence-aware splits (zero sequence leakage). A separate 2,000-image unlabeled ACDC test set is kept for demos and final qualitative testing. See `experiments/dataset-adverse16k.md`, `experiments/dataset-card-adverse16k.md`, `decisions/ADR-0004-adverse16k-dataset.md`, and `decisions/ADR-0005-sequence-aware-splits.md`.
 
 ## Non-goals
 

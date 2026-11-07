@@ -51,6 +51,7 @@ def load_rtts(root: Path) -> list[Sample]:
                     height=height,
                     boxes=boxes,
                     image_id=Path(file_name).stem,
+                    sequence_id=Path(file_name).stem.rsplit("_", 1)[0],
                 )
             )
     return samples

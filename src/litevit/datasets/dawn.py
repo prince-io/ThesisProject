@@ -5,13 +5,40 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from litevit.datasets.common import DAWN_MAP, Box, Sample, sha1_file
+from litevit.datasets.common import DAWN_MAP, Box, Sample, dhash_image, sha1_file
 
 
 def _text(element: ET.Element | None, tag: str) -> str:
     if element is None:
         return ""
     return (element.findtext(tag) or "").strip()
+
+
+def _group_near_duplicates(samples: list[Sample], threshold: int = 6) -> None:
+    """Assign near-duplicate connected components to the same group."""
+    count = len(samples)
+    if count == 0:
+        return
+    parent = list(range(count))
+
+    def find(index: int) -> int:
+        while parent[index] != index:
+            parent[index] = parent[parent[index]]
+            index = parent[index]
+        return index
+
+    def union(first: int, second: int) -> None:
+        root_first, root_second = find(first), find(second)
+        if root_first != root_second:
+            parent[root_second] = root_first
+
+    hashes = [dhash_image(sample.image_path) for sample in samples]
+    for first in range(count):
+        for second in range(first + 1, count):
+            if (hashes[first] ^ hashes[second]).bit_count() <= threshold:
+                union(first, second)
+    for index, sample in enumerate(samples):
+        sample.sequence_id = f"dawn_group_{find(index):05d}"
 
 
 def load_dawn(root: Path) -> list[Sample]:
@@ -66,6 +93,8 @@ def load_dawn(root: Path) -> list[Sample]:
                     height=height,
                     boxes=boxes,
                     image_id=xml_path.stem,
+                    sequence_id=xml_path.stem,
                 )
             )
+    _group_near_duplicates(samples)
     return samples

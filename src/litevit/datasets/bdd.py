@@ -8,7 +8,7 @@ from pathlib import Path
 
 import ijson
 
-from litevit.datasets.common import BDD_MAP, Box, Sample, bdd_condition
+from litevit.datasets.common import BDD_MAP, Box, Sample, bdd_condition, image_size
 
 
 def load_bdd_attributes(labels_dir: Path) -> dict[str, tuple[str, str]]:
@@ -70,6 +70,7 @@ def load_bdd(
             frames = payload.get("frames") or []
             if not frames:
                 continue
+            width, height = image_size(image_path)
             boxes: list[Box] = []
             for obj in frames[0].get("objects", []):
                 class_index = BDD_MAP.get(obj.get("category", ""))
@@ -78,15 +79,15 @@ def load_bdd(
                 box2d = obj.get("box2d")
                 if not box2d:
                     continue
-                boxes.append(
-                    Box(
-                        class_index,
-                        float(box2d["x1"]),
-                        float(box2d["y1"]),
-                        float(box2d["x2"]),
-                        float(box2d["y2"]),
-                    )
-                )
+                box = Box(
+                    class_index,
+                    float(box2d["x1"]),
+                    float(box2d["y1"]),
+                    float(box2d["x2"]),
+                    float(box2d["y2"]),
+                ).clipped(width, height)
+                if box is not None:
+                    boxes.append(box)
             if not boxes:
                 continue
             samples.append(
@@ -95,12 +96,13 @@ def load_bdd(
                     source_split=split,
                     condition=condition,
                     image_path=image_path,
-                    width=0,
-                    height=0,
+                    width=width,
+                    height=height,
                     boxes=boxes,
                     image_id=stem,
                     weather=frame_attributes[0],
                     timeofday=frame_attributes[1],
+                    sequence_id=stem,
                 )
             )
     return samples

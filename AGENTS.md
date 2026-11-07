@@ -103,6 +103,7 @@ Default section order:
 - Run tooling via `.venv/bin/` (`ruff`, `pytest`).
 - Dataset build: `.venv/bin/python scripts/build_adverse16k.py --root . --out data/processed/adverse16k --force --copy-images`.
 - Dataset verify: `.venv/bin/python scripts/verify_adverse16k.py --root . --out data/processed/adverse16k --report runs/dataset_checks/adverse16k --require-independent --checksums`.
+- Dataset audit: `.venv/bin/python scripts/audit_adverse16k.py --root . --out data/processed/adverse16k --report runs/dataset_checks/adverse16k`.
 - ACDC test prep: `.venv/bin/python scripts/prepare_acdc_test.py --root . --out data/unlabeled/acdc_test --report runs/dataset_checks/acdc_test --force`.
 - `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 

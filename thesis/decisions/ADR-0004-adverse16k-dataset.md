@@ -23,7 +23,7 @@ Build **adverse16k**: 16,000 labeled images, exactly **4,000 per condition** (fo
 - **Classes (5):** `0 person, 1 car, 2 bus, 3 bicycle, 4 motorcycle`.
 - **Merges:** `truck -> car`, `rider -> person`; `train`, `traffic light`, `traffic sign` annotations are dropped.
 - **Condition assignment:** mutually exclusive (adverse weather first; night only for night + clear/overcast/partly-cloudy/undefined weather).
-- **Splits:** source-native train/val pools are respected; DAWN is split 80/10/10; shortfalls are filled by a designated filler source (RTTS for fog, BDD100K for rain/snow/night). Seed 42.
+- **Splits (updated):** see `ADR-0005-sequence-aware-splits.md` — ACDC/RTTS are re-pooled into sequence-aware splits, DAWN uses near-duplicate groups, and shortfalls are filled by RTTS (fog) or BDD100K (rain/snow/night). Seed 42.
 - **Labels:** YOLO for training plus COCO JSON for evaluation. BDD100K boxes come from Detection-2020 labels; frame weather/time attributes come from the 2018 release.
 - **Storage:** processed images are **independent copies** in `data/processed/adverse16k` (link count 1), with `checksums.sha1`. The raw `ref/` datasets are retained for now.
 - **Unlabeled test:** the 2,000 ACDC adverse test images (500 per condition) are copied to `data/unlabeled/acdc_test` for demo and final qualitative testing. ACDC test GT is withheld, so this set has **no annotations**.
@@ -35,6 +35,7 @@ Build **adverse16k**: 16,000 labeled images, exactly **4,000 per condition** (fo
 - The official ETH BDD100K host was unreachable; Detection-2020 labels were taken from the archive.org `bdd100k` mirror and joined to the local 2018 attributes.
 - Raw datasets stay uncommitted under `ref/` and are retained for now; the independent processed copy and the ACDC test copy survive their eventual removal.
 - `DAWN sand` is excluded because it is a fifth condition and cannot be balanced to 4k.
+- The split policy was refined by `ADR-0005-sequence-aware-splits.md` after an audit found sequence and near-duplicate leakage.
 - Licenses are research/non-commercial: ACDC, DAWN (CC BY-NC 3.0), BDD100K, RTTS/RESIDE.
 
 ## Status

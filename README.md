@@ -39,13 +39,16 @@ Run checks: `.venv/bin/ruff check .` and `.venv/bin/pytest`.
 16,000 images, 4,000 per condition (fog, rain, snow, night), 5 classes
 (`person, car, bus, bicycle, motorcycle`), split 12,800/1,600/1,600.
 Built from ACDC + DAWN + BDD100K + RTTS as an **independent copy** with
-`checksums.sha1`. See `thesis/experiments/dataset-adverse16k.md`.
+`checksums.sha1`, using **sequence-aware splits** and DAWN near-duplicate grouping
+(zero sequence leakage). See `thesis/experiments/dataset-card-adverse16k.md`.
 
 ```bash
 .venv/bin/python scripts/build_adverse16k.py --root . --out data/processed/adverse16k \
   --force --copy-images
 .venv/bin/python scripts/verify_adverse16k.py --root . --out data/processed/adverse16k \
   --report runs/dataset_checks/adverse16k --require-independent --checksums
+.venv/bin/python scripts/audit_adverse16k.py --root . --out data/processed/adverse16k \
+  --report runs/dataset_checks/adverse16k
 .venv/bin/python scripts/prepare_acdc_test.py --root . --out data/unlabeled/acdc_test \
   --report runs/dataset_checks/acdc_test --force
 ```

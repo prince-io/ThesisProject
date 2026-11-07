@@ -38,12 +38,16 @@ DAWN_MAP = {
 }
 BDD_MAP = {
     "pedestrian": 0,
+    "person": 0,
     "rider": 0,
     "car": 1,
     "truck": 1,
     "bus": 2,
     "bicycle": 3,
+    "bike": 3,
     "motorcycle": 4,
+    "motorbike": 4,
+    "motor": 4,
 }
 RTTS_MAP = {
     "person": 0,
@@ -100,6 +104,8 @@ class Sample:
     image_id: str
     weather: str = ""
     timeofday: str = ""
+    sequence_id: str = ""
+    split_hint: str = ""
     output_name: str = ""
 
     @property
@@ -216,6 +222,19 @@ def write_coco(
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def dhash_image(path: Path, size: int = 8) -> int:
+    """Compute a 64-bit difference hash for near-duplicate grouping."""
+    with Image.open(path).convert("L").resize((size + 1, size)) as image:
+        pixels = list(image.get_flattened_data())
+    bits = 0
+    for row in range(size):
+        for col in range(size):
+            left = pixels[row * (size + 1) + col]
+            right = pixels[row * (size + 1) + col + 1]
+            bits = (bits << 1) | int(left > right)
+    return bits
 
 
 def sha1_file(path: Path, chunk_size: int = 1 << 20) -> str:

@@ -17,7 +17,7 @@ Hold automated verification for the `litevit` package.
 ## Work Guidance
 
 - Add a test for each new public behavior.
-- Dataset class mapping, box conversion, condition assignment, and split arithmetic are covered in `test_dataset_pipeline.py`.
+- Dataset class mapping (including BDD legacy aliases), box conversion, condition assignment, sequence assignment, dHash grouping, and split arithmetic are covered in `test_dataset_pipeline.py` and `test_acdc_test.py`.
 
 ## Verification
 

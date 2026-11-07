@@ -46,6 +46,7 @@ def verify(
     by_split_condition: Counter = Counter()
     by_condition_source: Counter = Counter()
     class_instances: Counter = Counter()
+    sequence_splits: dict[tuple[str, str], set[str]] = defaultdict(set)
     weather_missing = 0
 
     for row in rows:
@@ -57,6 +58,8 @@ def verify(
         by_source[source] += 1
         by_split_condition[f"{split}/{condition}"] += 1
         by_condition_source[f"{condition}/{source}"] += 1
+        if row.get("sequence"):
+            sequence_splits[(source, row["sequence"])].add(split)
         if source == "bdd" and (not row["weather"] or not row["timeofday"]):
             weather_missing += 1
 
@@ -111,6 +114,14 @@ def verify(
                 errors.append(
                     f"{condition}/{split}: {actual} != {expected}"
                 )
+
+    sequence_leakage = {
+        f"{source}/{sequence}": sorted(splits)
+        for (source, sequence), splits in sequence_splits.items()
+        if len(splits) > 1
+    }
+    if sequence_leakage:
+        errors.append(f"{len(sequence_leakage)} sequences span multiple splits")
 
     if weather_missing:
         errors.append(f"{weather_missing} BDD samples missing weather/timeofday")
@@ -186,6 +197,7 @@ def verify(
         "by_condition_source": dict(by_condition_source),
         "class_instances": dict(class_instances),
         "duplicate_hashes": duplicate_report,
+        "sequence_leakage": sequence_leakage,
         "independent_required": require_independent,
         "checksums_written": str(checksums_path) if checksums_path else None,
         "errors": errors,

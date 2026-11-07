@@ -18,7 +18,7 @@ Hold curated records of dataset preparation and experiments: what was built/run 
 
 ## Work Guidance
 
-- `dataset-adverse16k.md` records the current benchmark; run records are pending model implementation.
+- `dataset-adverse16k.md` records the current benchmark; `dataset-card-adverse16k.md` is its datasheet. Run records are pending model implementation.
 
 ## Verification
 

@@ -8,7 +8,7 @@ import json
 import shutil
 import time
 import zlib
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -63,6 +63,32 @@ def _take_up_to(items: list[Sample], count: int, rng: np.random.Generator) -> li
     return [items[int(index)] for index in indices]
 
 
+def _assign_sequence_splits(samples: list[Sample], seed: int) -> dict[str, str]:
+    """Assign whole sequences to train/val/test to prevent frame leakage."""
+    groups: dict[str, list[Sample]] = defaultdict(list)
+    for sample in samples:
+        groups[sample.sequence_id or sample.image_id].append(sample)
+    if not groups:
+        return {}
+    total = sum(len(items) for items in groups.values())
+    targets = {"train": 0.8 * total, "val": 0.1 * total, "test": 0.1 * total}
+    assigned = {split: 0 for split in SPLITS}
+    rng = np.random.default_rng(seed + zlib.crc32(b"sequence") % 10000)
+    order = list(groups)
+    rng.shuffle(order)
+    order.sort(key=lambda sequence: len(groups[sequence]), reverse=True)
+    split_map: dict[str, str] = {}
+    for sequence in order:
+        split = max(
+            SPLITS,
+            key=lambda candidate: (targets[candidate] - assigned[candidate])
+            / max(targets[candidate], 1.0),
+        )
+        split_map[sequence] = split
+        assigned[split] += len(groups[sequence])
+    return split_map
+
+
 def _allocate_source(
     condition: str,
     source: str,
@@ -73,13 +99,16 @@ def _allocate_source(
 ) -> list[tuple[Sample, str]]:
     n_train, n_val, n_test = targets
     rng = _rng(condition, source, seed)
-    if source == "dawn":
-        pool = list(samples)
-        train = _take_up_to(pool, n_train, rng)
-        remaining = [sample for sample in pool if id(sample) not in {id(item) for item in train}]
-        val = _take_up_to(remaining, n_val, rng)
-        remaining = [sample for sample in remaining if id(sample) not in {id(item) for item in val}]
-        test = _take_up_to(remaining, n_test, rng)
+    if source in {"acdc", "rtts", "dawn"}:
+        train = _take_up_to(
+            [sample for sample in samples if sample.split_hint == "train"], n_train, rng
+        )
+        val = _take_up_to(
+            [sample for sample in samples if sample.split_hint == "val"], n_val, rng
+        )
+        test = _take_up_to(
+            [sample for sample in samples if sample.split_hint == "test"], n_test, rng
+        )
     else:
         train_pool = [sample for sample in samples if sample.source_split == "train"]
         holdout_pool = [
@@ -217,6 +246,11 @@ def build(
     print(f"      bdd samples (rain/snow/night): {len(bdd)}", flush=True)
 
     all_samples = dawn + acdc + rtts + bdd
+    for source in ("acdc", "rtts", "dawn"):
+        source_samples = [sample for sample in all_samples if sample.source == source]
+        split_map = _assign_sequence_splits(source_samples, seed)
+        for sample in source_samples:
+            sample.split_hint = split_map[sample.sequence_id or sample.image_id]
     groups: dict[tuple[str, str], list[Sample]] = {}
     for sample in all_samples:
         groups.setdefault((sample.condition, sample.source), []).append(sample)
@@ -231,13 +265,24 @@ def build(
         ordered = [source for source in sources if source != filler] + [filler]
         actual = {split: 0 for split in SPLITS}
         for source in ordered:
-            desired = SOURCE_TARGETS.get((condition, source), (0, 0, 0))
+            group = groups.get((condition, source), [])
             if source == filler:
                 desired = tuple(
                     CONDITION_TARGETS[split] - actual[split] for split in SPLITS
                 )
-            group = groups.get((condition, source), [])
-            pools = Counter(sample.source_split for sample in group)
+            elif source in {"acdc", "dawn"}:
+                desired = tuple(
+                    sum(1 for sample in group if sample.split_hint == split)
+                    for split in SPLITS
+                )
+            else:
+                desired = SOURCE_TARGETS.get((condition, source), (0, 0, 0))
+            pools = Counter(
+                sample.split_hint
+                if source in {"acdc", "rtts", "dawn"}
+                else sample.source_split
+                for sample in group
+            )
             print(
                 f"      {condition}/{source}: pools {dict(pools)} targets {desired}",
                 flush=True,
@@ -276,6 +321,7 @@ def build(
                 "condition",
                 "split",
                 "image_id",
+                "sequence",
                 "weather",
                 "timeofday",
                 "width",
@@ -298,6 +344,7 @@ def build(
                     sample.condition,
                     split,
                     sample.image_id,
+                    sample.sequence_id,
                     sample.weather,
                     sample.timeofday,
                     sample.width,

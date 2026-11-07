@@ -71,6 +71,7 @@ def load_acdc(root: Path) -> list[Sample]:
                         height=height,
                         boxes=boxes,
                         image_id=Path(file_name).stem,
+                        sequence_id=Path(file_name).parent.name,
                     )
                 )
     return samples
