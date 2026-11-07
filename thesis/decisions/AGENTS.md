@@ -31,3 +31,4 @@ Record durable thesis decisions as append-only ADRs.
 - `ADR-0004-adverse16k-dataset.md`
 - `ADR-0005-sequence-aware-splits.md`
 - `ADR-0006-baseline-protocol.md`
+- `ADR-0007-measurement-and-analysis-protocol.md`

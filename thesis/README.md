@@ -24,7 +24,8 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - `adverse16k` dataset is built, verified, and audited (16,000 images, 4,000/condition) as an independent copy.
 - Sequence leakage and cross-split near-duplicates are zero; the datasheet records composition, splits, biases, and limitations.
 - Unlabeled ACDC test set prepared (2,000 images) for demos and final qualitative testing.
-- Baseline training/evaluation harness is implemented; `EXP-0001-baseline.md` is filled after the run.
+- Baseline training/evaluation harness is implemented; `EXP-0001-baseline.md` records the completed run.
+- Baseline results and error analysis are documented; `EXP-0002` (`cls_pw=0.0`) is pending.
 - Proposed LiteViT/weather-gate implementation has not started.
 
 ## Field map

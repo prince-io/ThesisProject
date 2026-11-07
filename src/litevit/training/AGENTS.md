@@ -17,9 +17,10 @@ Run training jobs, build evaluation subsets, and evaluate detectors overall and 
 
 ## Work Guidance
 
-- `train.py` wraps Ultralytics training; keep it thin.
+- `train.py` wraps Ultralytics training, writes run metadata, and records labeled VRAM metrics.
 - `subsets.py` derives per-condition/per-source lists from `manifest.csv`.
 - `evaluate.py` uses Ultralytics validation and saves subset metrics.
+- `error_analysis.py` matches predictions to GT and reports per-condition/source/class/size errors.
 
 ## Verification
 

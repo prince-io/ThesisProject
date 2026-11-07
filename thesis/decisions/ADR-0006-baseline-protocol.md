@@ -38,6 +38,7 @@ Evaluation protocol:
 ## Consequences
 
 - The baseline is class-weighted; a `cls_pw=0.0` ablation is required to isolate the effect.
+- Memory labeling and error-analysis details are refined by `ADR-0007-measurement-and-analysis-protocol.md`.
 - All later variants must use the same protocol for a fair comparison.
 - Results are not directly comparable to the official ACDC/RTTS splits because the benchmark uses sequence-aware re-splits.
 - One seed is used for Stage 2A; the final model should use three seeds if time permits.

@@ -17,7 +17,8 @@ Interpret results and record lessons, conclusions, and implications for the thes
 
 ## Work Guidance
 
-- (empty until implementation)
+- `baseline-analysis.md` interprets the baseline results and error analysis.
+- Keep interpretation separate from the facts in `../results/` and cite them.
 
 ## Verification
 

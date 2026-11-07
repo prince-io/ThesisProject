@@ -18,6 +18,7 @@ Hold training configurations for baseline and proposed models.
 ## Work Guidance
 
 - `baseline.yaml` defines the YOLOv8n reference protocol, including `cls_pw: 0.5`.
+- `ablation_cls_pw0.yaml` is the class-weighting ablation (`cls_pw: 0.0`); all other settings match the baseline.
 - Start new variants from the baseline config and change one factor at a time.
 
 ## Verification

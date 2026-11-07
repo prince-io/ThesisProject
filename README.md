@@ -11,7 +11,9 @@ Final-year thesis project. Target: YOLO-LiteViT-WG (YOLOv8n backbone + linear-at
 
 ## Status
 
-Environment is set up and the `adverse16k` dataset is built and verified. Implementation has not started; methodology content is deferred until implementation begins.
+Environment and the `adverse16k` dataset are ready. The YOLOv8n baseline is trained,
+evaluated, and error-analyzed (`EXP-0001`); the `cls_pw=0.0` ablation is prepared for
+the next run (`EXP-0002`). The proposed LiteViT/weather-gate model has not started.
 
 ## Code layout
 
@@ -78,12 +80,20 @@ demos and final qualitative testing; its ground truth is withheld by ACDC.
   --subsets data/processed/adverse16k/subsets \
   --figures-dir thesis/results/figures/baseline
 
-# 4. Generate curated thesis records
+# 4. Error analysis (val + test)
+.venv/bin/python scripts/error_analysis.py \
+  --weights runs/train/baseline_yolov8n_seed42/weights/best.pt \
+  --out runs/eval/baseline_yolov8n_seed42/error_analysis \
+  --splits val test
+
+# 5. Generate curated thesis records
 .venv/bin/python scripts/document_results.py \
   --train-run runs/train/baseline_yolov8n_seed42 \
-  --eval-run runs/eval/baseline_yolov8n_seed42
+  --eval-run runs/eval/baseline_yolov8n_seed42 \
+  --figures-dir thesis/results/figures/baseline \
+  --vram-report runs/train/vram_calibration/vram.json
 
-# 5. Optional export
+# 6. Optional export
 .venv/bin/python scripts/export.py \
   --weights runs/train/baseline_yolov8n_seed42/weights/best.pt \
   --format onnx
@@ -91,6 +101,39 @@ demos and final qualitative testing; its ground truth is withheld by ACDC.
 
 Protocol: YOLOv8n, 640, batch 4, AMP, `nbs=8`, AdamW 2e-4 + cosine, 100 epochs,
 seed 42, `cls_pw=0.5`. See `thesis/decisions/ADR-0006-baseline-protocol.md`.
+VRAM is reported as training PyTorch peak, training GPU-used peak (`nvidia-smi`
+calibration), and inference peak; see `ADR-0007`.
+
+## Ablation: cls_pw=0.0
+
+```bash
+.venv/bin/python scripts/train.py \
+  --config configs/train/ablation_cls_pw0.yaml \
+  --name ablation_cls_pw0_seed42
+
+.venv/bin/python scripts/evaluate.py \
+  --weights runs/train/ablation_cls_pw0_seed42/weights/best.pt \
+  --data configs/datasets/adverse16k.yaml \
+  --splits val test \
+  --out runs/eval/ablation_cls_pw0_seed42 \
+  --subsets data/processed/adverse16k/subsets \
+  --figures-dir thesis/results/figures/ablation_cls_pw0
+
+.venv/bin/python scripts/error_analysis.py \
+  --weights runs/train/ablation_cls_pw0_seed42/weights/best.pt \
+  --out runs/eval/ablation_cls_pw0_seed42/error_analysis \
+  --splits val test
+
+.venv/bin/python scripts/document_results.py \
+  --train-run runs/train/ablation_cls_pw0_seed42 \
+  --eval-run runs/eval/ablation_cls_pw0_seed42 \
+  --results thesis/results/ablation_cls_pw0.md \
+  --experiment thesis/experiments/EXP-0002-cls-pw0.md \
+  --figures-dir thesis/results/figures/ablation_cls_pw0 \
+  --vram-report runs/train/ablation_cls_pw0_seed42/vram.json \
+  --title "Ablation Results — cls_pw=0.0" \
+  --experiment-title "EXP-0002 — cls_pw=0.0 Ablation"
+```
 
 ## Conventions
 
