@@ -22,6 +22,10 @@ YOLO-LiteViT-WG: YOLOv8n backbone + linear-attention ViT blocks at neck P4/P5 + 
 - Batch size 4, mixed precision (AMP).
 - Target ~3.5–4.0 M parameters.
 
+## Tooling
+
+Python 3.12 + PyTorch 2.14.1 (CUDA 13.0) + torchvision + Ultralytics + timm/einops, aligned to the base paper's PyTorch ecosystem. See `decisions/ADR-0003-python-pytorch-stack.md`.
+
 ## Non-goals
 
 - Methodology content is not written until implementation starts.
@@ -29,5 +33,4 @@ YOLO-LiteViT-WG: YOLOv8n backbone + linear-attention ViT blocks at neck P4/P5 + 
 ## Open questions
 
 - Dataset selection (e.g., DAWN, RTTS, Foggy Cityscapes, custom) — undecided.
-- Implementation stack and tooling — deferred until implementation.
 - Whether to seed methodology from `ref/idea.md` — deferred.

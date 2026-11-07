@@ -11,17 +11,28 @@ Final-year thesis project. Target: YOLO-LiteViT-WG (YOLOv8n backbone + linear-at
 
 ## Status
 
-Implementation has not started. Methodology content is deferred until implementation begins.
+Environment is set up. Implementation has not started. Methodology content is deferred until implementation begins.
 
-## Planned structure (not yet created)
+## Code layout
 
-- `src/` — implementation, src-layout Python package.
+- `src/litevit/` — implementation package (editable install).
 - `configs/` — training and experiment YAML configs.
 - `scripts/` — entrypoints and utilities.
-- `tests/` — verification.
+- `tests/` — pytest suite.
 - `data/` — datasets (gitignored).
 - `runs/` — full run artifacts (gitignored).
-- `pyproject.toml` — dependencies and tooling (uv, PyTorch CUDA, Ultralytics).
+- `pyproject.toml` — dependencies and tooling.
+
+## Setup
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu130
+.venv/bin/pip install -e ".[dev]"
+```
+
+Verify CUDA: `.venv/bin/python -c "import torch; print(torch.cuda.is_available())"`.
+Run checks: `.venv/bin/ruff check .` and `.venv/bin/pytest`.
 
 ## Conventions
 

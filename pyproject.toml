@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "litevit"
+version = "0.1.0"
+description = "Lightweight YOLO-LiteViT-WG object detection for adverse weather"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Proprietary"
+dependencies = [
+    "torch>=2.14,<2.15",
+    "torchvision>=0.29,<0.30",
+    "ultralytics>=8.4,<9",
+    "timm>=0.9",
+    "einops>=0.8",
+    "numpy>=1.26",
+    "opencv-python>=4.10",
+    "pillow>=10",
+    "pyyaml>=6",
+    "scipy>=1.13",
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+    "tqdm>=4.66",
+    "pycocotools>=2.0.8",
+    "torchmetrics>=1.5",
+    "tensorboard>=2.17",
+    "onnx>=1.16",
+    "onnxruntime>=1.19",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

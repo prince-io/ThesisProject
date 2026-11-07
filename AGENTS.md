@@ -94,20 +94,20 @@ Default section order:
 - Ask the user for approval before every git commit; never commit unprompted.
 - Use plain, simple commit messages that are easy to understand.
 
-## Planned Structure
+## Local Environment
 
-Not yet created. When each is created, add its child AGENTS.md and index it here.
-
-- `src/` — implementation, src-layout Python package.
-- `configs/` — training and experiment YAML configs.
-- `scripts/` — entrypoints and utilities.
-- `tests/` — verification.
-- `data/` — datasets (gitignored).
-- `runs/` — full run artifacts: logs, weights, figures (gitignored).
-- `pyproject.toml` — dependencies and tooling (uv, PyTorch CUDA, Ultralytics).
+- Python 3.12 virtualenv at `.venv/` (gitignored).
+- PyTorch 2.14.1 + torchvision 0.29.1, CUDA 13.0 wheels; RTX 3050 Laptop 6 GB (compute 8.6).
+- Dependencies declared in `pyproject.toml`; install with `.venv/bin/pip install -e ".[dev]"`.
+- Run tooling via `.venv/bin/` (`ruff`, `pytest`).
+- `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 
 ## Child DOX Index
 
 - `ref/AGENTS.md` — non-authoritative inbox for ideas, suggestions, and papers; promotion rules.
 - `thesis/AGENTS.md` — curated source of truth: field separation, ADRs, metadata, citation rules, and its own child index.
 - `manuscript/AGENTS.md` — derived LaTeX thesis output; drafting rules.
+- `src/AGENTS.md` — implementation package (`litevit`), src layout, code contracts.
+- `configs/AGENTS.md` — training and experiment YAML configs.
+- `scripts/AGENTS.md` — entrypoints and utilities.
+- `tests/AGENTS.md` — verification tests.

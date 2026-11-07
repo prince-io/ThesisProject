@@ -19,6 +19,7 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 
 ## Status
 
+- Environment is set up (Python 3.12, PyTorch 2.14.1 CUDA).
 - Implementation has not started.
 - Methodology content is deferred until implementation begins.
 

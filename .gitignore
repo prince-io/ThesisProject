@@ -14,9 +14,14 @@ runs/
 venv/
 __pycache__/
 *.py[cod]
+*.egg-info/
+build/
+dist/
 .ipynb_checkpoints/
 .pytest_cache/
 .ruff_cache/
+.coverage
+htmlcov/
 
 # Reference PDFs are not committed
 ref/*.pdf
