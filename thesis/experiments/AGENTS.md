@@ -20,6 +20,7 @@ Hold curated records of dataset preparation and experiments: what was built/run 
 
 - `dataset-adverse16k.md` records the current benchmark; `dataset-card-adverse16k.md` is its datasheet.
 - `EXP-0001-baseline.md` records the YOLOv8n reference run; `EXP-0002-cls-pw0.md` records the completed class-weighting ablation.
+- `EXP-0003-v1-p5.md` records the V1 P5-only LiteViT experiment.
 - `README.md` is the experiment registry; update it when a run is added or completes.
 
 ## Verification

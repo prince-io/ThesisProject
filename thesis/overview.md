@@ -7,6 +7,7 @@ sources:
   - experiments/dataset-adverse16k.md
   - experiments/EXP-0001-baseline.md
   - experiments/EXP-0002-cls-pw0.md
+  - experiments/EXP-0003-v1-p5.md
   - results/baseline.md
   - results/ablation-comparison.md
   - findings/baseline-analysis.md
@@ -14,6 +15,7 @@ sources:
   - decisions/ADR-0008-freeze-class-weighting.md
   - related-work/architecture-grounding.md
   - bibliography/references.bib
+  - methodology/architecture.md
 ---
 
 # Project Overview
@@ -67,13 +69,20 @@ literature-backed, but the exact YOLO-LiteViT-WG combination and expected gains 
 hypotheses. `ref/idea.md` claims about “C2f-ViT” remain unverified; YOLO-CasViT is
 the verified closest work.
 
+## Architecture status
+
+V1 (one identity-initialized linear-attention block after P5/SPPF, before PAN/FPN)
+is implemented in `src/litevit/models/` and configured in
+`configs/train/litevit_v1_p5.yaml`. Training and evaluation are pending
+(`EXP-0003`). V2 (P4 block) and V3 (weather gate) are not implemented.
+
 ## Non-goals
 
 - Final LiteViT/weather-gate design is not fixed until the Stage 2B technical spike.
 
 ## Open questions
 
-- V1 P5-only LiteViT implementation and smoke test — next.
-- V2/V3 architecture and memory feasibility — pending V1.
+- V1 P5-only LiteViT training and evaluation — pending.
+- V2/V3 architecture and memory feasibility — pending V1 results.
 - Multi-seed validation for final claims — pending.
 - Whether the test split should be reserved for the final model after Stage 2A reuse — pending.

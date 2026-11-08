@@ -16,6 +16,7 @@ import ultralytics
 import yaml
 from ultralytics import YOLO
 
+from litevit.models import build_v1_p5
 from litevit.training.config import load_config, resolve_paths
 
 
@@ -127,6 +128,7 @@ def build_metadata(root: Path, config: dict, save_dir: Path, vram: dict) -> dict
     return {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "command": " ".join(sys.argv),
+        "arch": config.get("arch", "baseline"),
         "git_commit": _git_commit(root),
         "python": sys.version.split()[0],
         "torch": torch.__version__,
@@ -172,13 +174,21 @@ def train(
                 torch.cuda.reset_peak_memory_stats()
             model.train(resume=True)
         else:
-            train_args = {key: value for key, value in config.items() if key != "model"}
+            train_args = {
+                key: value for key, value in config.items() if key not in {"model", "arch"}
+            }
             train_args["name"] = run_name
             if epochs is not None:
                 train_args["epochs"] = epochs
             if extra:
                 train_args.update(extra)
-            model = YOLO(str(config["model"]))
+            arch = str(config.get("arch", "baseline"))
+            if arch == "baseline":
+                model = YOLO(str(config["model"]))
+            elif arch == "v1_p5":
+                model = build_v1_p5(config["model"])
+            else:
+                raise ValueError(f"unsupported architecture: {arch}")
             for event in ("on_train_batch_end", "on_fit_epoch_end", "on_train_end"):
                 model.add_callback(event, tracker)
             if torch.cuda.is_available():

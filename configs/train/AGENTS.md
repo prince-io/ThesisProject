@@ -19,6 +19,7 @@ Hold training configurations for baseline and proposed models.
 
 - `baseline.yaml` defines the YOLOv8n reference protocol, including `cls_pw: 0.5`.
 - `ablation_cls_pw0.yaml` is the class-weighting ablation (`cls_pw: 0.0`); all other settings match the baseline.
+- `litevit_v1_p5.yaml` is the V1 P5-only LiteViT run (`arch: v1_p5`); all other settings match the baseline.
 - Start new variants from the baseline config and change one factor at a time.
 
 ## Verification

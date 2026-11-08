@@ -78,21 +78,21 @@ YOLO, AMP, AdamW, and gradient checkpointing are also in
 5. Whether the gate should use feature statistics or image-level weather cues.
 6. Whether the gains survive multi-seed evaluation and per-condition analysis.
 
-## Decision for V1
+## V1 status
 
-Implement V1 as a **falsifiable hypothesis**, not as a validated method:
+V1 is implemented as a **falsifiable hypothesis**, not as a validated method:
 
-- P5-only LiteViT block before PAN/FPN.
+- P5-only LiteViT block before PAN/FPN (`src/litevit/models/`).
 - Identity initialization (zero LayerScale) so the model starts equal to the
   pretrained YOLOv8n baseline.
 - Same protocol as `EXP-0001`: 640, batch 4, AMP [@micikevicius2018mixed],
   `nbs=8`, AdamW 2e-4 [@loshchilov2019adamw], 100 epochs, seed 42, `cls_pw=0.5`.
 - Gradient checkpointing [@chen2016sublinear] is a fallback only if the P4 block
   exceeds the memory budget.
-- Smoke test first: check forward/train/save/load, VRAM, and that initial outputs
-  match the baseline.
+- Smoke checks: forward/backward at 640 batch 4, save/load, and initial output
+  equality with the baseline. Full training results are pending.
 - Report per-condition, per-class, per-size, and per-source results; do not claim
   success from overall mAP alone.
 
-The architecture document in `thesis/methodology/` should be written when V1 code
-starts, using this evidence table as its rationale.
+The architecture document is `thesis/methodology/architecture.md`. The run record is
+`thesis/experiments/EXP-0003-v1-p5.md`.

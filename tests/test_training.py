@@ -44,6 +44,36 @@ def test_load_config_rejects_bad_cls_pw(tmp_path: Path) -> None:
         load_config(config_path)
 
 
+def test_load_config_accepts_v1_arch(tmp_path: Path) -> None:
+    config_path = tmp_path / "train.yaml"
+    config_path.write_text(
+        "model: yolov8n.pt\n"
+        "arch: v1_p5\n"
+        "data: data.yaml\n"
+        "epochs: 1\n"
+        "imgsz: 640\n"
+        "batch: 4\n",
+        encoding="utf-8",
+    )
+    config = load_config(config_path)
+    assert config["arch"] == "v1_p5"
+
+
+def test_load_config_rejects_bad_arch(tmp_path: Path) -> None:
+    config_path = tmp_path / "train.yaml"
+    config_path.write_text(
+        "model: yolov8n.pt\n"
+        "arch: unknown\n"
+        "data: data.yaml\n"
+        "epochs: 1\n"
+        "imgsz: 640\n"
+        "batch: 4\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError):
+        load_config(config_path)
+
+
 def test_build_subsets(tmp_path: Path) -> None:
     manifest = tmp_path / "manifest.csv"
     rows = [

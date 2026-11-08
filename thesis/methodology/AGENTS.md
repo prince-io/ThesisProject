@@ -17,7 +17,8 @@ Hold the validated approach: architecture, training strategy, and design rationa
 ## Work Guidance
 
 - `training.md` records the baseline training/evaluation protocol.
-- Add architecture/methodology docs as implementation proceeds.
+- `architecture.md` records the V1 P5 LiteViT design and integration.
+- Add V2/V3 and weather-gate methodology as implementation proceeds.
 
 ## Verification
 

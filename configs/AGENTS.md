@@ -18,6 +18,7 @@ Hold YAML configs for datasets, models, training, and evaluation.
 ## Work Guidance
 
 - Dataset configs exist for `adverse16k`; `train/baseline.yaml` defines the YOLOv8n reference protocol.
+- `train/litevit_v1_p5.yaml` defines the V1 P5-only LiteViT run (`arch: v1_p5`).
 
 ## Verification
 

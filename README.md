@@ -15,8 +15,9 @@ Environment and the `adverse16k` dataset are ready. The YOLOv8n baseline is trai
 evaluated, and error-analyzed (`EXP-0001`). The `cls_pw=0.0` ablation (`EXP-0002`) is
 complete: validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained
 for later comparisons (`ADR-0008`). Architecture literature grounding is complete in
-`thesis/bibliography/` and `thesis/related-work/`; V1 (P5-only LiteViT) is next. The
-proposed LiteViT/weather-gate model has not started.
+`thesis/bibliography/` and `thesis/related-work/`. V1 (P5-only LiteViT) is implemented;
+training and evaluation are pending. The full LiteViT/weather-gate model (V2/V3) has
+not started.
 
 ## Code layout
 
@@ -136,6 +137,47 @@ calibration), and inference peak; see `ADR-0007`.
   --vram-report runs/train/ablation_cls_pw0_seed42/vram.json \
   --title "Ablation Results — cls_pw=0.0" \
   --experiment-title "EXP-0002 — cls_pw=0.0 Ablation"
+```
+
+## V1: P5 LiteViT
+
+V1 inserts one identity-initialized LiteViT block after the P5/SPPF backbone layer
+(before PAN/FPN). See `thesis/methodology/architecture.md` and
+`thesis/experiments/EXP-0003-v1-p5.md`.
+
+```bash
+# Optional one-epoch smoke run
+.venv/bin/python scripts/train.py \
+  --config configs/train/litevit_v1_p5.yaml \
+  --name litevit_v1_p5_smoke --epochs 1
+
+# Full V1 run
+.venv/bin/python scripts/train.py \
+  --config configs/train/litevit_v1_p5.yaml \
+  --name litevit_v1_p5_seed42
+
+.venv/bin/python scripts/evaluate.py \
+  --weights runs/train/litevit_v1_p5_seed42/weights/best.pt \
+  --data configs/datasets/adverse16k.yaml \
+  --splits val test \
+  --out runs/eval/litevit_v1_p5_seed42 \
+  --subsets data/processed/adverse16k/subsets \
+  --figures-dir thesis/results/figures/litevit_v1_p5
+
+.venv/bin/python scripts/error_analysis.py \
+  --weights runs/train/litevit_v1_p5_seed42/weights/best.pt \
+  --out runs/eval/litevit_v1_p5_seed42/error_analysis \
+  --splits val test
+
+.venv/bin/python scripts/document_results.py \
+  --train-run runs/train/litevit_v1_p5_seed42 \
+  --eval-run runs/eval/litevit_v1_p5_seed42 \
+  --results thesis/results/litevit_v1_p5.md \
+  --experiment thesis/experiments/EXP-0003-v1-p5.md \
+  --figures-dir thesis/results/figures/litevit_v1_p5 \
+  --vram-report runs/train/litevit_v1_p5_seed42/vram.json \
+  --title "V1 Results — P5 LiteViT" \
+  --experiment-title "EXP-0003 — V1 P5 LiteViT"
 ```
 
 ## Conventions

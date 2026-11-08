@@ -15,7 +15,7 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 
 1. `overview.md` — scope, goals, constraints, open questions.
 2. `decisions/` — accepted and proposed decisions (ADRs).
-3. `methodology/` — approach (empty until implementation).
+3. `methodology/` — training protocol and V1 architecture.
 4. `experiments/` — dataset record (`dataset-adverse16k.md`), datasheet (`dataset-card-adverse16k.md`), and run records.
 5. `results/` → `findings/` — facts, interpretation.
 6. `related-work/` + `bibliography/` — literature.
@@ -32,7 +32,8 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - `cls_pw=0.5` is frozen for later comparisons (`decisions/ADR-0008-freeze-class-weighting.md`).
 - Architecture literature grounding is complete: verified BibTeX entries are in `bibliography/references.bib`; synthesis is in `related-work/`.
 - The design-choice → evidence → assumption map is in `related-work/architecture-grounding.md`.
-- V1 (P5-only LiteViT) is next; the proposed LiteViT/weather-gate implementation has not started.
+- V1 (P5-only LiteViT) is implemented; training/evaluation are pending (`EXP-0003`).
+- V2 (P4 LiteViT) and the weather gate have not started.
 
 ## Field map
 

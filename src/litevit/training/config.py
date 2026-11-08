@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 
 REQUIRED_KEYS = ("model", "data", "epochs", "imgsz", "batch")
+ALLOWED_ARCHS = ("baseline", "v1_p5")
 DEFAULT_PROJECT = "runs/train"
 
 
@@ -20,6 +21,9 @@ def load_config(path: Path) -> dict:
     cls_pw = float(payload.get("cls_pw", 0.0))
     if not 0.0 <= cls_pw <= 1.0:
         raise ValueError(f"cls_pw must be in [0, 1], got {cls_pw}")
+    arch = str(payload.get("arch", "baseline"))
+    if arch not in ALLOWED_ARCHS:
+        raise ValueError(f"arch must be one of {ALLOWED_ARCHS}, got {arch}")
     return payload
 
 
