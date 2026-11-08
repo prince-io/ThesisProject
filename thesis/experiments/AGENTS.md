@@ -19,7 +19,7 @@ Hold curated records of dataset preparation and experiments: what was built/run 
 ## Work Guidance
 
 - `dataset-adverse16k.md` records the current benchmark; `dataset-card-adverse16k.md` is its datasheet.
-- `EXP-0001-baseline.md` records the YOLOv8n reference run; `EXP-0002-cls-pw0.md` is the class-weighting ablation.
+- `EXP-0001-baseline.md` records the YOLOv8n reference run; `EXP-0002-cls-pw0.md` records the completed class-weighting ablation.
 - `README.md` is the experiment registry; update it when a run is added or completes.
 
 ## Verification

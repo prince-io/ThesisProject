@@ -10,7 +10,7 @@
 - Hard constraint: train stably at 640x640 on an RTX 3050 6GB (batch 4, AMP).
 - `thesis/` is the curated source of truth for the final thesis document. `ref/` is a non-authoritative inbox of ideas, suggestions, and papers. `manuscript/` is the derived LaTeX write-up.
 - Dataset pipeline is implemented: `adverse16k` (16k images, 4 conditions, 5 classes) from ACDC + DAWN + BDD100K + RTTS.
-- YOLOv8n baseline is trained, evaluated, and error-analyzed (`EXP-0001`); results and findings are documented. The `cls_pw=0.0` ablation (`EXP-0002`) is pending. The proposed LiteViT/weather-gate model has not started.
+- YOLOv8n baseline is trained, evaluated, and error-analyzed (`EXP-0001`); results and findings are documented. The `cls_pw=0.0` ablation (`EXP-0002`) is complete; validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained (`ADR-0008`). The proposed LiteViT/weather-gate model has not started.
 
 ## Core Contract
 
@@ -111,7 +111,10 @@ Default section order:
 - Evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/baseline_yolov8n_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/baseline_yolov8n_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/baseline`.
 - Error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/baseline_yolov8n_seed42/weights/best.pt --out runs/eval/baseline_yolov8n_seed42/error_analysis --splits val test`.
 - Document: `.venv/bin/python scripts/document_results.py --train-run runs/train/baseline_yolov8n_seed42 --eval-run runs/eval/baseline_yolov8n_seed42 --figures-dir thesis/results/figures/baseline --vram-report runs/train/vram_calibration/vram.json`.
-- Ablation: `.venv/bin/python scripts/train.py --config configs/train/ablation_cls_pw0.yaml --name ablation_cls_pw0_seed42`.
+- Ablation train: `.venv/bin/python scripts/train.py --config configs/train/ablation_cls_pw0.yaml --name ablation_cls_pw0_seed42`.
+- Ablation evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/ablation_cls_pw0_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/ablation_cls_pw0_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/ablation_cls_pw0`.
+- Ablation error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/ablation_cls_pw0_seed42/weights/best.pt --out runs/eval/ablation_cls_pw0_seed42/error_analysis --splits val test`.
+- Ablation document: `.venv/bin/python scripts/document_results.py --train-run runs/train/ablation_cls_pw0_seed42 --eval-run runs/eval/ablation_cls_pw0_seed42 --results thesis/results/ablation_cls_pw0.md --experiment thesis/experiments/EXP-0002-cls-pw0.md --figures-dir thesis/results/figures/ablation_cls_pw0 --vram-report runs/train/ablation_cls_pw0_seed42/vram.json --title "Ablation Results — cls_pw=0.0" --experiment-title "EXP-0002 — cls_pw=0.0 Ablation"`.
 - `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 
 ## Child DOX Index

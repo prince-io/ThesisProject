@@ -105,7 +105,9 @@ def _environment_table(meta: dict) -> list[str]:
     ]
 
 
-def _vram_table(meta: dict, metrics: dict, vram: dict | None) -> list[str]:
+def _vram_table(
+    meta: dict, metrics: dict, vram: dict | None, vram_note: str | None = None
+) -> list[str]:
     efficiency = metrics["efficiency"]
     allocated = meta.get("training_peak_allocated_mb") or meta.get("peak_vram_mb")
     reserved = meta.get("training_peak_reserved_mb")
@@ -134,13 +136,8 @@ def _vram_table(meta: dict, metrics: dict, vram: dict | None) -> list[str]:
             f"| Inference PyTorch peak allocated | {_fmt(efficiency.get('peak_vram_mb'), 1)} MB |",
         ]
     )
-    if vram:
-        lines.extend(
-            [
-                "",
-                "_GPU-used and reserved values come from an identical 1-epoch calibration run._",
-            ]
-        )
+    if vram_note:
+        lines.extend(["", f"_{vram_note}_"])
     return lines
 
 
@@ -220,6 +217,7 @@ def _write_results(
     metrics: dict,
     run_meta: dict,
     vram: dict | None,
+    vram_note: str | None,
     title: str,
 ) -> None:
     sources = [str(train_run), str(eval_run)]
@@ -261,7 +259,7 @@ def _write_results(
         "",
         "### VRAM",
         "",
-        *_vram_table(run_meta, metrics, vram),
+        *_vram_table(run_meta, metrics, vram, vram_note),
         "",
         "## Figures",
         "",
@@ -293,6 +291,7 @@ def _write_experiment(
     metrics: dict,
     run_meta: dict,
     vram: dict | None,
+    vram_note: str | None,
     title: str,
     experiment_title: str,
 ) -> None:
@@ -343,7 +342,7 @@ def _write_experiment(
         "",
         "## VRAM",
         "",
-        *_vram_table(run_meta, metrics, vram),
+        *_vram_table(run_meta, metrics, vram, vram_note),
         "",
         "## Results",
         "",
@@ -364,7 +363,7 @@ def _write_experiment(
         "",
         f"- Training: `{train_run}`",
         f"- Evaluation: `{eval_run}`",
-        f"- Figures: `thesis/results/figures/{train_run.name}/`",
+        f"- Figures: `{figures_dir}/`",
         "",
     ]
     experiment_path.parent.mkdir(parents=True, exist_ok=True)
@@ -399,6 +398,18 @@ def main() -> None:
         if args.vram_report and args.vram_report.exists()
         else None
     )
+    vram_note = None
+    if vram:
+        if "calibration" in str(args.vram_report).lower():
+            vram_note = (
+                "GPU-used and reserved values come from an identical 1-epoch "
+                "calibration run."
+            )
+        else:
+            vram_note = (
+                "GPU-used and reserved values were recorded during the full "
+                "training run."
+            )
     _write_results(
         args.train_run,
         args.eval_run,
@@ -407,6 +418,7 @@ def main() -> None:
         metrics,
         run_meta,
         vram,
+        vram_note,
         args.title,
     )
     _write_experiment(
@@ -419,6 +431,7 @@ def main() -> None:
         metrics,
         run_meta,
         vram,
+        vram_note,
         args.title,
         args.experiment_title,
     )

@@ -1,10 +1,12 @@
 ---
 title: Baseline Analysis — YOLOv8n
 status: draft
-date: 2026-11-07
+date: 2026-11-08
 sources:
   - thesis/results/baseline.md
   - thesis/results/baseline-error-analysis.md
+  - thesis/results/ablation-comparison.md
+  - thesis/findings/ablation-analysis.md
   - runs/eval/baseline_yolov8n_seed42/error_analysis/error_analysis.json
 ---
 
@@ -52,8 +54,9 @@ evidence.
 
 - Single seed (42); differences of a few points are not yet statistically
   established.
-- The baseline uses class weighting (`cls_pw=0.5`); the `cls_pw=0.0` ablation is
-  required to attribute gains to class weighting.
+- The baseline uses class weighting (`cls_pw=0.5`); the completed `cls_pw=0.0`
+  ablation does not establish a clear class-weighting benefit
+  ([ablation analysis](ablation-analysis.md)).
 - Error analysis uses a fixed operating point (conf 0.25, IoU 0.5); the ceiling
   pass is diagnostic, not a deployable operating point.
 - ACDC/DAWN/RTTS subset sizes are small (hundreds of images), so per-source
@@ -71,11 +74,14 @@ evidence.
   it per condition, not only overall.
 - Track per-class and per-size recall in every ablation; overall mAP can hide
   rare-class and small-object regressions.
-- Evaluate the `cls_pw=0.0` ablation before claiming class-weighting benefits.
+- The completed `cls_pw=0.0` ablation does not show a clear class-weighting
+  benefit; keep `cls_pw=0.5` and focus on architecture/weather adaptation
+  ([ablation analysis](ablation-analysis.md)).
 
 ## Next checks
 
-1. Run the `cls_pw=0.0` ablation and compare per-class/per-condition metrics.
+1. Use the completed `cls_pw=0.0` ablation comparison to constrain class-weighting
+   claims ([ablation analysis](ablation-analysis.md)).
 2. Add multi-seed runs for the final baseline and proposed model.
 3. Inspect the qualitative FN/FP overlays for night/rain/snow and ACDC.
 4. Proceed to the LiteViT/weather-gate technical spike and memory validation.

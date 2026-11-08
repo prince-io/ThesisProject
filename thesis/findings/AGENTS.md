@@ -18,6 +18,7 @@ Interpret results and record lessons, conclusions, and implications for the thes
 ## Work Guidance
 
 - `baseline-analysis.md` interprets the baseline results and error analysis.
+- `ablation-analysis.md` interprets the `cls_pw=0.0` ablation and its implications.
 - Keep interpretation separate from the facts in `../results/` and cite them.
 
 ## Verification

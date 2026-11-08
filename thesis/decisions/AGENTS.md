@@ -32,3 +32,4 @@ Record durable thesis decisions as append-only ADRs.
 - `ADR-0005-sequence-aware-splits.md`
 - `ADR-0006-baseline-protocol.md`
 - `ADR-0007-measurement-and-analysis-protocol.md`
+- `ADR-0008-freeze-class-weighting.md`

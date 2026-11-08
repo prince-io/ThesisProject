@@ -1,10 +1,11 @@
 ---
 title: Training and Evaluation Protocol
 status: draft
-date: 2026-11-07
+date: 2026-11-08
 sources:
   - thesis/decisions/ADR-0006-baseline-protocol.md
   - thesis/decisions/ADR-0007-measurement-and-analysis-protocol.md
+  - thesis/decisions/ADR-0008-freeze-class-weighting.md
   - thesis/experiments/dataset-adverse16k.md
   - configs/train/baseline.yaml
 ---
@@ -33,7 +34,7 @@ YOLOv8n, COCO-pretrained, with class-head remapping to the 5 target classes.
 | Optimizer | `AdamW`, `lr0=2e-4`, `lrf=0.01`, `cos_lr=True` |
 | Schedule | `warmup_epochs=3`, `weight_decay=5e-4`, `epochs=100`, `patience=20` |
 | Augmentation | `mosaic=0.5`, `mixup=0.05`, `close_mosaic=10` |
-| Class weighting | `cls_pw=0.5` |
+| Class weighting | `cls_pw=0.5` (frozen; see `ADR-0008`) |
 | Reproducibility | `seed=42`, `deterministic=True`, `workers=4`, `cache=False` |
 | Output | `runs/train/<run_name>/` |
 
@@ -49,7 +50,8 @@ The authoritative resolved configuration for a completed run is stored in
 - Mosaic 0.5, MixUp 0.05, mosaic disabled for the final 10 epochs.
 - Deterministic training, seed 42.
 - Class weighting: `cls_pw=0.5`, i.e. inverse-frequency weights raised to the power 0.5
-  and normalized to mean 1. This dampens the severe car dominance.
+  and normalized to mean 1. This dampens the severe car dominance and is retained
+  after the `cls_pw=0.0` ablation (`ADR-0008`).
 
 ## Commands
 
@@ -106,9 +108,10 @@ For the ablation, the run writes its own `vram.json`; pass
 
 ## Ablation protocol
 
-The class-weighting ablation uses `configs/train/ablation_cls_pw0.yaml`
+The class-weighting ablation used `configs/train/ablation_cls_pw0.yaml`
 (`cls_pw=0.0`, all other settings identical) and the same evaluation/error-analysis
-commands. It is registered as `EXP-0002` in `thesis/experiments/README.md`.
+commands; it is registered as `EXP-0002`. `cls_pw=0.5` remains the fixed setting
+for later comparisons (`ADR-0008`).
 
 ## Reproducibility
 

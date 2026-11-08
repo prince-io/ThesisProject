@@ -104,4 +104,4 @@ See the sibling results document for the full tables.
 
 - Training: `runs/train/baseline_yolov8n_seed42`
 - Evaluation: `runs/eval/baseline_yolov8n_seed42`
-- Figures: `thesis/results/figures/baseline_yolov8n_seed42/`
+- Figures: `thesis/results/figures/baseline/`

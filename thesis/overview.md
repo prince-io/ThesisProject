@@ -1,13 +1,17 @@
 ---
 title: Project Overview
 status: draft
-date: 2026-11-07
+date: 2026-11-08
 sources:
   - ref/idea.md
   - experiments/dataset-adverse16k.md
   - experiments/EXP-0001-baseline.md
+  - experiments/EXP-0002-cls-pw0.md
   - results/baseline.md
+  - results/ablation-comparison.md
   - findings/baseline-analysis.md
+  - findings/ablation-analysis.md
+  - decisions/ADR-0008-freeze-class-weighting.md
 ---
 
 # Project Overview
@@ -41,12 +45,22 @@ test mAP50 0.543 / mAP50-95 0.329. Fog is strongest; night/rain/snow and ACDC ar
 weakest. Error analysis is in `results/baseline-error-analysis.md`; interpretation is in
 `findings/baseline-analysis.md`.
 
+## Ablation status
+
+`EXP-0002` (`cls_pw=0.0`, seed 42) is complete: val mAP50 0.487 / mAP50-95 0.291;
+test mAP50 0.531 / mAP50-95 0.325. Validation is effectively tied, test mAP is
+lower than the baseline, and rare-class effects are mixed. At confidence 0.25 the
+ablation has slightly higher precision/recall, so the result is a
+calibration/ranking trade-off rather than a clear gain. Facts are in
+`results/ablation-comparison.md`; interpretation is in `findings/ablation-analysis.md`.
+`cls_pw=0.5` is retained for LiteViT-WG (`ADR-0008`).
+
 ## Non-goals
 
 - Final LiteViT/weather-gate design is not fixed until the Stage 2B technical spike.
 
 ## Open questions
 
-- `cls_pw=0.0` ablation (`EXP-0002`) — pending.
 - Multi-seed validation for final claims — pending.
 - Stage 2B architecture and memory feasibility — pending.
+- Whether the test split should be reserved for the final model after Stage 2A reuse — pending.

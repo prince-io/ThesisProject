@@ -12,8 +12,10 @@ Final-year thesis project. Target: YOLO-LiteViT-WG (YOLOv8n backbone + linear-at
 ## Status
 
 Environment and the `adverse16k` dataset are ready. The YOLOv8n baseline is trained,
-evaluated, and error-analyzed (`EXP-0001`); the `cls_pw=0.0` ablation is prepared for
-the next run (`EXP-0002`). The proposed LiteViT/weather-gate model has not started.
+evaluated, and error-analyzed (`EXP-0001`). The `cls_pw=0.0` ablation (`EXP-0002`) is
+complete: validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained
+for later comparisons (`ADR-0008`). The proposed LiteViT/weather-gate model has not
+started.
 
 ## Code layout
 

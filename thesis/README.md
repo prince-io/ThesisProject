@@ -1,8 +1,10 @@
 ---
 title: Thesis Knowledge Base Index
 status: draft
-date: 2026-11-07
-sources: []
+date: 2026-11-08
+sources:
+  - thesis/overview.md
+  - thesis/experiments/README.md
 ---
 
 # Thesis Knowledge Base
@@ -25,7 +27,9 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - Sequence leakage and cross-split near-duplicates are zero; the datasheet records composition, splits, biases, and limitations.
 - Unlabeled ACDC test set prepared (2,000 images) for demos and final qualitative testing.
 - Baseline training/evaluation harness is implemented; `EXP-0001-baseline.md` records the completed run.
-- Baseline results and error analysis are documented; `EXP-0002` (`cls_pw=0.0`) is pending.
+- Baseline results and error analysis are documented in `results/` and interpreted in `findings/`.
+- `EXP-0002` (`cls_pw=0.0`) is complete; comparison and interpretation are in `results/ablation-comparison.md` and `findings/ablation-analysis.md`.
+- `cls_pw=0.5` is frozen for later comparisons (`decisions/ADR-0008-freeze-class-weighting.md`).
 - Proposed LiteViT/weather-gate implementation has not started.
 
 ## Field map
