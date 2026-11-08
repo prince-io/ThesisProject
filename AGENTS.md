@@ -10,7 +10,8 @@
 - Hard constraint: train stably at 640x640 on an RTX 3050 6GB (batch 4, AMP).
 - `thesis/` is the curated source of truth for the final thesis document. `ref/` is a non-authoritative inbox of ideas, suggestions, and papers. `manuscript/` is the derived LaTeX write-up.
 - Dataset pipeline is implemented: `adverse16k` (16k images, 4 conditions, 5 classes) from ACDC + DAWN + BDD100K + RTTS.
-- YOLOv8n baseline is trained, evaluated, and error-analyzed (`EXP-0001`); results and findings are documented. The `cls_pw=0.0` ablation (`EXP-0002`) is complete; validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained (`ADR-0008`). The proposed LiteViT/weather-gate model has not started.
+- YOLOv8n baseline is trained, evaluated, and error-analyzed (`EXP-0001`); results and findings are documented. The `cls_pw=0.0` ablation (`EXP-0002`) is complete; validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained (`ADR-0008`).
+- Architecture literature grounding is complete: verified citations in `thesis/bibliography/references.bib`, synthesis in `thesis/related-work/`, and an evidence-vs-assumption map in `thesis/related-work/architecture-grounding.md`. V1 (P5-only LiteViT) is next; the proposed LiteViT/weather-gate model has not started.
 
 ## Core Contract
 

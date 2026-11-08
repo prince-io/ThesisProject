@@ -17,7 +17,11 @@ Hold curated synthesis of related work with citations.
 
 ## Work Guidance
 
-- Seed from `ref/` papers when literature review begins.
+- `adverse-weather-detection.md` — verified adverse-weather detection evidence.
+- `lightweight-vit-detection.md` — ViT/hybrid detection and linear-attention evidence.
+- `weather-adaptive-gating.md` — channel/weather gating evidence.
+- `architecture-grounding.md` — design-choice → evidence → assumption map.
+- Cite via keys in `../bibliography/references.bib`; do not cite `ref/` directly.
 
 ## Verification
 

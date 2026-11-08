@@ -14,8 +14,9 @@ Final-year thesis project. Target: YOLO-LiteViT-WG (YOLOv8n backbone + linear-at
 Environment and the `adverse16k` dataset are ready. The YOLOv8n baseline is trained,
 evaluated, and error-analyzed (`EXP-0001`). The `cls_pw=0.0` ablation (`EXP-0002`) is
 complete: validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained
-for later comparisons (`ADR-0008`). The proposed LiteViT/weather-gate model has not
-started.
+for later comparisons (`ADR-0008`). Architecture literature grounding is complete in
+`thesis/bibliography/` and `thesis/related-work/`; V1 (P5-only LiteViT) is next. The
+proposed LiteViT/weather-gate model has not started.
 
 ## Code layout
 

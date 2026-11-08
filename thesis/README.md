@@ -30,7 +30,9 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - Baseline results and error analysis are documented in `results/` and interpreted in `findings/`.
 - `EXP-0002` (`cls_pw=0.0`) is complete; comparison and interpretation are in `results/ablation-comparison.md` and `findings/ablation-analysis.md`.
 - `cls_pw=0.5` is frozen for later comparisons (`decisions/ADR-0008-freeze-class-weighting.md`).
-- Proposed LiteViT/weather-gate implementation has not started.
+- Architecture literature grounding is complete: verified BibTeX entries are in `bibliography/references.bib`; synthesis is in `related-work/`.
+- The design-choice → evidence → assumption map is in `related-work/architecture-grounding.md`.
+- V1 (P5-only LiteViT) is next; the proposed LiteViT/weather-gate implementation has not started.
 
 ## Field map
 

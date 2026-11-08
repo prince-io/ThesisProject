@@ -12,6 +12,8 @@ sources:
   - findings/baseline-analysis.md
   - findings/ablation-analysis.md
   - decisions/ADR-0008-freeze-class-weighting.md
+  - related-work/architecture-grounding.md
+  - bibliography/references.bib
 ---
 
 # Project Overview
@@ -55,12 +57,23 @@ calibration/ranking trade-off rather than a clear gain. Facts are in
 `results/ablation-comparison.md`; interpretation is in `findings/ablation-analysis.md`.
 `cls_pw=0.5` is retained for LiteViT-WG (`ADR-0008`).
 
+## Literature status
+
+The architecture literature-grounding pass is complete. `bibliography/references.bib`
+holds verified entries; `related-work/architecture-grounding.md` separates supported
+design choices from assumptions. The key conclusion is that P4/P5 global context,
+linear attention, CPE, stable residual init, and channel gating are each
+literature-backed, but the exact YOLO-LiteViT-WG combination and expected gains are
+hypotheses. `ref/idea.md` claims about “C2f-ViT” remain unverified; YOLO-CasViT is
+the verified closest work.
+
 ## Non-goals
 
 - Final LiteViT/weather-gate design is not fixed until the Stage 2B technical spike.
 
 ## Open questions
 
+- V1 P5-only LiteViT implementation and smoke test — next.
+- V2/V3 architecture and memory feasibility — pending V1.
 - Multi-seed validation for final claims — pending.
-- Stage 2B architecture and memory feasibility — pending.
 - Whether the test split should be reserved for the final model after Stage 2A reuse — pending.

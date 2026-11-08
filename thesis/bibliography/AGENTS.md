@@ -16,7 +16,10 @@ Hold BibTeX entries used by the thesis.
 
 ## Work Guidance
 
-- (empty until literature review begins)
+- `references.bib` holds verified entries for the architecture literature review.
+- Add a key only after checking the title, authors, venue, year, and DOI/arXiv ID.
+- Mark unverified claims in `../related-work/architecture-grounding.md`; do not
+  create bibliography entries for unverified works.
 
 ## Verification
 

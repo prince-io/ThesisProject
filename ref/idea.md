@@ -191,3 +191,17 @@ For reference, YOLOv8s-WAMNet is around 13.24 GFLOPs with a more complex hybrid 
 **YOLO-LiteViT-WG = YOLOv8n backbone (local features) + linear attention at neck P4/P5 (global context) + lightweight channel weather gating (degradation robustness).**
 
 It places ViT where spatial resolution is smallest, uses linear attention to control VRAM, and uses a very low-cost statistical gate to address adverse-weather degradation. With about **3.5–4M parameters**, it is a lightweight hybrid design that can realistically be trained on an **RTX 3050 6GB** while still capturing ViT’s global-context benefit.
+
+------------------------------------------------------------------
+
+Initial ViT Ablation – Main Idea
+Objective: Test whether adding global contextual feature learning improves YOLOv8n detection in adverse driving conditions.
+
+Architecture change: Keep the standard YOLOv8n architecture and insert one lightweight ViT/Transformer encoder block at the deepest part of the backbone, before the PAN/FPN neck.
+YOLOv8n Backbone → Lightweight Transformer Block → YOLO Neck → Detection Head
+
+Concept: The existing CNN backbone captures local features such as edges and object shapes, which can become degraded in fog, rain, snow, and low light. The Transformer block adds global context and long-range feature relationships before the features are passed to the neck for multi-scale detection.
+
+Ablation: Compare the modified model directly against the original YOLOv8n baseline while keeping the dataset and training settings identical.
+
+Keep it lightweight: Use only one Transformer block initially to minimize additional parameters and GPU memory usage.
