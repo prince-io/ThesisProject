@@ -15,9 +15,11 @@ Environment and the `adverse16k` dataset are ready. The YOLOv8n baseline is trai
 evaluated, and error-analyzed (`EXP-0001`). The `cls_pw=0.0` ablation (`EXP-0002`) is
 complete: validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained
 for later comparisons (`ADR-0008`). Architecture literature grounding is complete in
-`thesis/bibliography/` and `thesis/related-work/`. V1 (P5-only LiteViT) is implemented;
-training and evaluation are pending. The full LiteViT/weather-gate model (V2/V3) has
-not started.
+`thesis/bibliography/` and `thesis/related-work/`. V1 (P5-only LiteViT) is implemented; the first run was invalid because Ultralytics
+discarded the wrapper. The trainer fix is in place; the FP32 block passed a 10-epoch stability test with
+finite loss and a correct 3.674 M block. The wrapper failed after training before
+metadata; fallback logging was added. A repeat test/full run are pending. The full LiteViT/weather-gate model
+(V2/V3) has not started.
 
 ## Code layout
 
@@ -154,28 +156,28 @@ V1 inserts one identity-initialized LiteViT block after the P5/SPPF backbone lay
 # Full V1 run
 .venv/bin/python scripts/train.py \
   --config configs/train/litevit_v1_p5.yaml \
-  --name litevit_v1_p5_seed42
+  --name litevit_v1_p5_seed42_v2
 
 .venv/bin/python scripts/evaluate.py \
-  --weights runs/train/litevit_v1_p5_seed42/weights/best.pt \
+  --weights runs/train/litevit_v1_p5_seed42_v2/weights/best.pt \
   --data configs/datasets/adverse16k.yaml \
   --splits val test \
-  --out runs/eval/litevit_v1_p5_seed42 \
+  --out runs/eval/litevit_v1_p5_seed42_v2 \
   --subsets data/processed/adverse16k/subsets \
   --figures-dir thesis/results/figures/litevit_v1_p5
 
 .venv/bin/python scripts/error_analysis.py \
-  --weights runs/train/litevit_v1_p5_seed42/weights/best.pt \
-  --out runs/eval/litevit_v1_p5_seed42/error_analysis \
+  --weights runs/train/litevit_v1_p5_seed42_v2/weights/best.pt \
+  --out runs/eval/litevit_v1_p5_seed42_v2/error_analysis \
   --splits val test
 
 .venv/bin/python scripts/document_results.py \
-  --train-run runs/train/litevit_v1_p5_seed42 \
-  --eval-run runs/eval/litevit_v1_p5_seed42 \
+  --train-run runs/train/litevit_v1_p5_seed42_v2 \
+  --eval-run runs/eval/litevit_v1_p5_seed42_v2 \
   --results thesis/results/litevit_v1_p5.md \
   --experiment thesis/experiments/EXP-0003-v1-p5.md \
   --figures-dir thesis/results/figures/litevit_v1_p5 \
-  --vram-report runs/train/litevit_v1_p5_seed42/vram.json \
+  --vram-report runs/train/litevit_v1_p5_seed42_v2/vram.json \
   --title "V1 Results — P5 LiteViT" \
   --experiment-title "EXP-0003 — V1 P5 LiteViT"
 ```

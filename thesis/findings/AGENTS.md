@@ -19,6 +19,7 @@ Interpret results and record lessons, conclusions, and implications for the thes
 
 - `baseline-analysis.md` interprets the baseline results and error analysis.
 - `ablation-analysis.md` interprets the `cls_pw=0.0` ablation and its implications.
+- `v1-invalid-run.md` diagnoses the discarded-wrapper V1 run and records the lesson.
 - Keep interpretation separate from the facts in `../results/` and cite them.
 
 ## Verification

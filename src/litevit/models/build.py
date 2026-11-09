@@ -20,15 +20,24 @@ def _infer_out_channels(module: nn.Module) -> int:
     raise ValueError(f"could not infer output channels for {type(module).__name__}")
 
 
-def _wrap_layer(model: YOLO, index: int, block: nn.Module) -> None:
-    detection = model.model
-    if detection is None:
-        raise RuntimeError("YOLO model has no detector attached")
-    layers = detection.model
-    if not 0 <= index < len(layers):
-        raise IndexError(f"layer index {index} outside model with {len(layers)} layers")
-    base = layers[index]
-    layers[index] = FeatureWithBlock(base, block)
+def wrap_v1_p5(
+    detection: nn.Module,
+    heads: int = 4,
+    mlp_ratio: float = 2.0,
+) -> nn.Module:
+    """Wrap the P5/SPPF layer of an existing detection model in place."""
+    layers = getattr(detection, "model", None)
+    if layers is None:
+        raise RuntimeError("detection model has no layer sequence")
+    if not 0 <= P5_LAYER_INDEX < len(layers):
+        raise IndexError(
+            f"layer index {P5_LAYER_INDEX} outside model with {len(layers)} layers"
+        )
+    base = layers[P5_LAYER_INDEX]
+    dim = _infer_out_channels(base)
+    block = LiteViTBlock(dim, heads=heads, mlp_ratio=mlp_ratio)
+    layers[P5_LAYER_INDEX] = FeatureWithBlock(base, block)
+    return detection
 
 
 def build_v1_p5(
@@ -43,11 +52,7 @@ def build_v1_p5(
     identity-initialized.
     """
     model = YOLO(str(weights))
-    detection = model.model
-    if detection is None:
+    if model.model is None:
         raise RuntimeError("YOLO model has no detector attached")
-    base = detection.model[P5_LAYER_INDEX]
-    dim = _infer_out_channels(base)
-    block = LiteViTBlock(dim, heads=heads, mlp_ratio=mlp_ratio)
-    _wrap_layer(model, P5_LAYER_INDEX, block)
+    wrap_v1_p5(model.model, heads=heads, mlp_ratio=mlp_ratio)
     return model

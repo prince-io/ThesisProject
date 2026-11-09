@@ -7,7 +7,7 @@ from litevit.models.blocks import (
     LinearAttention2d,
     LiteViTBlock,
 )
-from litevit.models.build import build_v1_p5
+from litevit.models.build import build_v1_p5, wrap_v1_p5
 
 __all__ = [
     "ConvFFN",
@@ -16,4 +16,5 @@ __all__ = [
     "LinearAttention2d",
     "LiteViTBlock",
     "build_v1_p5",
+    "wrap_v1_p5",
 ]

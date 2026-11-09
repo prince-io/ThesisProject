@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import traceback
 from pathlib import Path
 
 import torch
@@ -16,8 +17,9 @@ import ultralytics
 import yaml
 from ultralytics import YOLO
 
-from litevit.models import build_v1_p5
+from litevit.models.build import P5_LAYER_INDEX
 from litevit.training.config import load_config, resolve_paths
+from litevit.training.trainer import V1DetectionTrainer
 
 
 def _git_commit(root: Path) -> str:
@@ -103,6 +105,40 @@ def _stop_gpu_sampler(process: subprocess.Popen | None, path: Path | None) -> fl
     return max(values) if values else None
 
 
+def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
+    """Fail the run if the saved checkpoint does not contain the requested architecture."""
+    if arch == "baseline":
+        return True
+    if arch != "v1_p5":
+        raise ValueError(f"unsupported architecture: {arch}")
+    checkpoint = save_dir / "weights/best.pt"
+    if not checkpoint.exists():
+        checkpoint = save_dir / "weights/last.pt"
+    if not checkpoint.exists():
+        raise FileNotFoundError(f"no checkpoint found under {save_dir / 'weights'}")
+    model = YOLO(str(checkpoint)).model
+    layers = getattr(model, "model", None)
+    if layers is None or not hasattr(layers[P5_LAYER_INDEX], "block"):
+        raise RuntimeError(
+            "V1 checkpoint does not contain a LiteViT block at the P5 layer; "
+            "the architecture was discarded before training"
+        )
+    if not all(torch.isfinite(parameter).all() for parameter in model.parameters()):
+        raise RuntimeError("V1 checkpoint contains non-finite parameters")
+    params = sum(parameter.numel() for parameter in model.parameters())
+    if params < 3_500_000:
+        raise RuntimeError(
+            f"V1 checkpoint has {params:,} parameters, which looks like the baseline"
+        )
+    block = layers[P5_LAYER_INDEX].block
+    if block.qkv.weight.detach().abs().sum().item() == 0.0:
+        raise RuntimeError(
+            "V1 block weights are zero; training likely produced NaN "
+            "and the checkpoint was sanitized"
+        )
+    return True
+
+
 def build_vram(tracker: _VramTracker, baseline_used: float | None, peak_used: float | None) -> dict:
     total_mb = None
     if torch.cuda.is_available():
@@ -122,13 +158,16 @@ def build_vram(tracker: _VramTracker, baseline_used: float | None, peak_used: fl
     }
 
 
-def build_metadata(root: Path, config: dict, save_dir: Path, vram: dict) -> dict:
+def build_metadata(
+    root: Path, config: dict, save_dir: Path, vram: dict, arch_verified: bool
+) -> dict:
     checksums = root / "data/processed/adverse16k/checksums.sha1"
     gpu = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu"
     return {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
         "command": " ".join(sys.argv),
         "arch": config.get("arch", "baseline"),
+        "arch_verified": arch_verified,
         "git_commit": _git_commit(root),
         "python": sys.version.split()[0],
         "torch": torch.__version__,
@@ -158,6 +197,8 @@ def train(
     root = Path.cwd() if root is None else root
     config = resolve_paths(load_config(config_path), root)
     run_name = name or config.get("name") or "baseline"
+    arch = str(config.get("arch", "baseline"))
+    trainer_cls = V1DetectionTrainer if arch == "v1_p5" else None
     tracker = _VramTracker()
     baseline_used = _gpu_used_mb()
     sampler, sampler_path = _start_gpu_sampler()
@@ -172,7 +213,10 @@ def train(
                 model.add_callback(event, tracker)
             if torch.cuda.is_available():
                 torch.cuda.reset_peak_memory_stats()
-            model.train(resume=True)
+            resume_kwargs = {"resume": True}
+            if trainer_cls is not None:
+                resume_kwargs["trainer"] = trainer_cls
+            model.train(**resume_kwargs)
         else:
             train_args = {
                 key: value for key, value in config.items() if key not in {"model", "arch"}
@@ -182,26 +226,31 @@ def train(
                 train_args["epochs"] = epochs
             if extra:
                 train_args.update(extra)
-            arch = str(config.get("arch", "baseline"))
-            if arch == "baseline":
-                model = YOLO(str(config["model"]))
-            elif arch == "v1_p5":
-                model = build_v1_p5(config["model"])
-            else:
+            if arch not in {"baseline", "v1_p5"}:
                 raise ValueError(f"unsupported architecture: {arch}")
+            model = YOLO(str(config["model"]))
             for event in ("on_train_batch_end", "on_fit_epoch_end", "on_train_end"):
                 model.add_callback(event, tracker)
             if torch.cuda.is_available():
                 torch.cuda.reset_peak_memory_stats()
-            model.train(**train_args)
+            train_kwargs = {"trainer": trainer_cls} if trainer_cls is not None else {}
+            model.train(**train_kwargs, **train_args)
+    except Exception:
+        error_dir = Path(config["project"]) / run_name
+        error_dir.mkdir(parents=True, exist_ok=True)
+        (error_dir / "train_error.txt").write_text(
+            traceback.format_exc(), encoding="utf-8"
+        )
+        raise
     finally:
         peak_used = _stop_gpu_sampler(sampler, sampler_path)
     vram = build_vram(tracker, baseline_used, peak_used)
     save_dir = Path(model.trainer.save_dir)
     save_dir.mkdir(parents=True, exist_ok=True)
+    arch_verified = verify_saved_architecture(save_dir, arch)
     (save_dir / "vram.json").write_text(json.dumps(vram, indent=2), encoding="utf-8")
     (save_dir / "run_meta.json").write_text(
-        json.dumps(build_metadata(root, config, save_dir, vram), indent=2),
+        json.dumps(build_metadata(root, config, save_dir, vram, arch_verified), indent=2),
         encoding="utf-8",
     )
     (save_dir / "resolved_config.yaml").write_text(

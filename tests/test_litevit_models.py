@@ -1,4 +1,5 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import torch
@@ -12,6 +13,8 @@ from litevit.models import (
     LiteViTBlock,
     build_v1_p5,
 )
+from litevit.training.train import verify_saved_architecture
+from litevit.training.trainer import V1DetectionTrainer
 
 
 def _assert_same_output(left, right, atol: float = 1e-5) -> None:
@@ -55,6 +58,16 @@ def test_litevit_block_is_identity_at_init() -> None:
     assert torch.allclose(x, y, atol=1e-6)
 
 
+def test_litevit_block_fp16_forward_stays_finite() -> None:
+    block = LiteViTBlock(32, heads=4).eval()
+    x = torch.randn(2, 32, 8, 9, dtype=torch.float16)
+    with torch.no_grad():
+        y = block(x)
+    assert y.dtype == torch.float16
+    assert torch.isfinite(y).all()
+    assert torch.allclose(x.float(), y.float(), atol=1e-3)
+
+
 def test_litevit_block_parameter_budget() -> None:
     block = LiteViTBlock(256, heads=4)
     params = sum(p.numel() for p in block.parameters())
@@ -87,3 +100,32 @@ def test_build_v1_p5_starts_as_baseline() -> None:
         y_base = baseline(x)
         y_wrapped = wrapped(x)
     _assert_same_output(y_base, y_wrapped)
+
+
+def test_v1_trainer_builds_wrapped_five_class_model() -> None:
+    weights = Path("yolov8n.pt")
+    if not weights.exists():
+        pytest.skip("yolov8n.pt not available")
+    trainer = object.__new__(V1DetectionTrainer)
+    trainer.args = SimpleNamespace(model=str(weights), pretrained=True, cls_remap=True)
+    trainer.data = {
+        "nc": 5,
+        "names": {0: "person", 1: "car", 2: "bus", 3: "bicycle", 4: "motorcycle"},
+        "channels": 3,
+    }
+    base = YOLO(str(weights)).model
+    model = trainer.get_model(cfg=base.yaml, weights=base, verbose=False)
+    assert isinstance(model.model[9], FeatureWithBlock)
+    assert model.model[-1].nc == 5
+    assert 3_500_000 < sum(p.numel() for p in model.parameters()) < 3_800_000
+
+
+def test_architecture_verification_rejects_baseline(tmp_path: Path) -> None:
+    weights = Path("yolov8n.pt")
+    if not weights.exists():
+        pytest.skip("yolov8n.pt not available")
+    graph_dir = tmp_path / "weights"
+    graph_dir.mkdir()
+    YOLO(str(weights)).save(str(graph_dir / "best.pt"))
+    with pytest.raises(RuntimeError):
+        verify_saved_architecture(tmp_path, "v1_p5")

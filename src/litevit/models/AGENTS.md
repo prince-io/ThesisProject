@@ -23,7 +23,7 @@ pretrained Ultralytics YOLO models.
 
 - `blocks.py` — LayerNorm2d, linear attention, ConvFFN, LiteViTBlock,
   FeatureWithBlock.
-- `build.py` — `build_v1_p5`, which wraps the P5/SPPF layer (index 9).
+- `build.py` — `wrap_v1_p5` and `build_v1_p5`, which wrap the P5/SPPF layer (index 9).
 - V2 (P4) and V3 (weather gate) are not implemented yet.
 - Add tests in `tests/test_litevit_models.py` for shape, identity, parameter budget,
   and integration.

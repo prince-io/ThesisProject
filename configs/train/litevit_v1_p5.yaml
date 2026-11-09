@@ -24,7 +24,7 @@ seed: 42
 deterministic: true
 cache: false
 project: runs/train
-name: litevit_v1_p5_seed42
+name: litevit_v1_p5_seed42_v2
 exist_ok: false
 plots: true
 val: true

@@ -58,7 +58,10 @@ out = q (kv) / (q · sum(k) + eps)
 ```
 
 The attention is computed in float32 for numerical stability under AMP, then cast
-back to the input dtype. Four heads are used; the head dimension is `C/4`.
+back to the input dtype. Four heads are used; the head dimension is `C/4`. The full
+block runs under `autocast(enabled=False)` in float32 and casts its output back to
+the input dtype; this avoids fp16 LayerNorm/attention overflow while keeping the
+P5 block small.
 
 ### 3. Residual and ConvFFN
 
@@ -79,16 +82,20 @@ from the pretrained YOLOv8n behavior.
 
 ## Integration with Ultralytics
 
-`build_v1_p5` loads `yolov8n.pt` first, so all original weights transfer. It then
-replaces detector layer 9 with a wrapper:
+`V1DetectionTrainer.get_model` builds the model inside Ultralytics trainer setup:
+it creates a 5-class `DetectionModel`, loads `yolov8n.pt` with class remapping, and
+then replaces detector layer 9 with a wrapper:
 
 ```python
 FeatureWithBlock(base=SPPF, block=LiteViTBlock(256))
 ```
 
-The wrapper preserves the original `i`, `f`, `type`, and output shape, so the
-Ultralytics forward graph and saved-output indices do not change. New blocks are
-identity-initialized; no state-dict remapping is needed.
+Building inside the trainer is required: Ultralytics rebuilds the model from
+`model.yaml` when training starts, which discards Python-level wrappers added
+before `train()`. The wrapper preserves the original `i`, `f`, `type`, and output
+shape, so the forward graph and saved-output indices do not change. New blocks are
+identity-initialized; no state-dict remapping is needed. `train.py` verifies the
+saved `best.pt` contains `FeatureWithBlock` at layer 9 after training.
 
 ## Size and compute
 

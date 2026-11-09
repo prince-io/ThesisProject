@@ -17,7 +17,8 @@ Run training jobs, build evaluation subsets, and evaluate detectors overall and 
 
 ## Work Guidance
 
-- `train.py` wraps Ultralytics training, selects `baseline` or `v1_p5` from the config `arch`, writes run metadata, and records labeled VRAM metrics.
+- `train.py` wraps Ultralytics training, selects `baseline` or `v1_p5` from the config `arch`, verifies the saved architecture, writes run metadata, records labeled VRAM metrics, and logs training exceptions to `train_error.txt`.
+- `trainer.py` implements `V1DetectionTrainer`, which builds and wraps V1 inside Ultralytics `get_model` so the wrapper survives trainer setup; it logs post-training validation/plot failures and falls back to live validation.
 - `subsets.py` derives per-condition/per-source lists from `manifest.csv`.
 - `evaluate.py` uses Ultralytics validation and saves subset metrics.
 - `error_analysis.py` matches predictions to GT and reports per-condition/source/class/size errors.

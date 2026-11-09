@@ -32,7 +32,8 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - `cls_pw=0.5` is frozen for later comparisons (`decisions/ADR-0008-freeze-class-weighting.md`).
 - Architecture literature grounding is complete: verified BibTeX entries are in `bibliography/references.bib`; synthesis is in `related-work/`.
 - The design-choice → evidence → assumption map is in `related-work/architecture-grounding.md`.
-- V1 (P5-only LiteViT) is implemented; training/evaluation are pending (`EXP-0003`).
+- V1 (P5-only LiteViT) is implemented. The first run was invalid because Ultralytics discarded the wrapper. The FP32 block then passed a 10-epoch stability test with finite loss and a correct 3.674 M block; the wrapper failed after training before metadata, and fallback logging was added. A repeat test is next.
+- Corrected V1 run (`EXP-0003`) and evaluation are pending.
 - V2 (P4 LiteViT) and the weather gate have not started.
 
 ## Field map

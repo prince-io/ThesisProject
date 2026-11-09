@@ -20,8 +20,8 @@ Hold the `litevit` Python package: backbone/neck/head modules, weather gating, d
 ## Work Guidance
 
 - Dataset preparation and the training/evaluation harness are implemented.
-- V1 (P5-only LiteViT) is implemented in `litevit/models/`; V2 (P4) and the weather
-  gate are not implemented yet.
+- V1 (P5-only LiteViT) is implemented in `litevit/models/` and built inside
+  `litevit/training/trainer.py`; V2 (P4) and the weather gate are not implemented yet.
 - Add modules one concern at a time.
 - Add a test in `tests/` for each new public behavior.
 

@@ -115,12 +115,15 @@ class LiteViTBlock(nn.Module):
                 nn.init.zeros_(module.bias)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        y = self.norm1(x)
-        y = y + self.cpe(y)
-        y = self.attention(self.qkv(y))
-        x = x + self.gamma1 * self.proj(y)
-        x = x + self.gamma2 * self.ffn(self.norm2(x))
-        return x
+        input_dtype = x.dtype
+        with torch.autocast(device_type=x.device.type, enabled=False):
+            x = x.float()
+            y = self.norm1(x)
+            y = y + self.cpe(y)
+            y = self.attention(self.qkv(y))
+            x = x + self.gamma1 * self.proj(y)
+            x = x + self.gamma2 * self.ffn(self.norm2(x))
+        return x.to(dtype=input_dtype)
 
 
 class FeatureWithBlock(nn.Module):

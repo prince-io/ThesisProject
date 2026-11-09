@@ -12,6 +12,7 @@ sources:
   - results/ablation-comparison.md
   - findings/baseline-analysis.md
   - findings/ablation-analysis.md
+  - findings/v1-invalid-run.md
   - decisions/ADR-0008-freeze-class-weighting.md
   - related-work/architecture-grounding.md
   - bibliography/references.bib
@@ -73,8 +74,11 @@ the verified closest work.
 
 V1 (one identity-initialized linear-attention block after P5/SPPF, before PAN/FPN)
 is implemented in `src/litevit/models/` and configured in
-`configs/train/litevit_v1_p5.yaml`. Training and evaluation are pending
-(`EXP-0003`). V2 (P4 block) and V3 (weather gate) are not implemented.
+`configs/train/litevit_v1_p5.yaml`. The first run was invalid because Ultralytics
+discarded the wrapper; `V1DetectionTrainer` now builds V1 inside trainer setup and
+verifies the saved checkpoint. The FP32 block passed a 10-epoch stability test with finite loss and a correct
+3.674 M block; the wrapper failed after training before metadata, and fallback
+logging was added. A repeat test and full run are pending (`EXP-0003`). V2 (P4 block) and V3 (weather gate) are not implemented.
 
 ## Non-goals
 
