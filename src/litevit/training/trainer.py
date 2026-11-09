@@ -7,29 +7,34 @@ import traceback
 from ultralytics.models.yolo.detect import DetectionTrainer
 from ultralytics.utils import LOGGER
 
-from litevit.models import wrap_v1_p5
-from litevit.models.build import P5_LAYER_INDEX
+from litevit.models import wrap_gate_only, wrap_v1_p5
+from litevit.models.build import GATE_LAYER_INDICES, P5_LAYER_INDEX
 
 
-class V1DetectionTrainer(DetectionTrainer):
-    """Build V1 inside the trainer so Ultralytics cannot discard the wrapper.
+class LiteDetectionTrainer(DetectionTrainer):
+    """Build a LiteViT variant inside trainer setup.
 
-    The default trainer rebuilds the model from ``model.yaml`` when training
-    starts. This override wraps the freshly built model before the optimizer,
-    EMA, and training loop are created.
+    Ultralytics rebuilds the model from ``model.yaml`` when training starts. The
+    variant wrapper must therefore be applied after that rebuild, before the
+    optimizer, EMA, and training loop are created.
     """
+
+    def _is_wrapped(self, model) -> bool:
+        raise NotImplementedError
+
+    def _wrap_model(self, model):
+        raise NotImplementedError
 
     def get_model(self, cfg=None, weights=None, verbose=True):
         if getattr(self, "resume", False) and weights is not None:
             model = getattr(weights, "ema", weights)
-            layers = getattr(model, "model", None)
-            if layers is None:
+            if getattr(model, "model", None) is None:
                 raise RuntimeError("resume checkpoint has no detector layer sequence")
-            if not hasattr(layers[P5_LAYER_INDEX], "block"):
-                wrap_v1_p5(model)
+            if not self._is_wrapped(model):
+                model = self._wrap_model(model)
             return model
         model = super().get_model(cfg=cfg, weights=weights, verbose=verbose)
-        return wrap_v1_p5(model)
+        return self._wrap_model(model)
 
     def _log_post_train_error(self, name: str) -> None:
         path = self.save_dir / f"{name}_error.txt"
@@ -53,3 +58,23 @@ class V1DetectionTrainer(DetectionTrainer):
             super().plot_metrics()
         except Exception:
             self._log_post_train_error("plot_metrics")
+
+
+class V1DetectionTrainer(LiteDetectionTrainer):
+    """Build P5 LiteViT inside trainer setup."""
+
+    def _is_wrapped(self, model) -> bool:
+        return hasattr(model.model[P5_LAYER_INDEX], "block")
+
+    def _wrap_model(self, model):
+        return wrap_v1_p5(model)
+
+
+class GateDetectionTrainer(LiteDetectionTrainer):
+    """Build P3/P4/P5 weather gates inside trainer setup."""
+
+    def _is_wrapped(self, model) -> bool:
+        return all(hasattr(model.model[index], "gate") for index in GATE_LAYER_INDICES)
+
+    def _wrap_model(self, model):
+        return wrap_gate_only(model)

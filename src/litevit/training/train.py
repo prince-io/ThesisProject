@@ -17,9 +17,9 @@ import ultralytics
 import yaml
 from ultralytics import YOLO
 
-from litevit.models.build import P5_LAYER_INDEX
+from litevit.models.build import GATE_LAYER_INDICES, P5_LAYER_INDEX
 from litevit.training.config import load_config, resolve_paths
-from litevit.training.trainer import V1DetectionTrainer
+from litevit.training.trainer import GateDetectionTrainer, V1DetectionTrainer
 
 
 def _git_commit(root: Path) -> str:
@@ -109,7 +109,7 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
     """Fail the run if the saved checkpoint does not contain the requested architecture."""
     if arch == "baseline":
         return True
-    if arch != "v1_p5":
+    if arch not in {"v1_p5", "gate_only"}:
         raise ValueError(f"unsupported architecture: {arch}")
     checkpoint = save_dir / "weights/best.pt"
     if not checkpoint.exists():
@@ -118,23 +118,36 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
         raise FileNotFoundError(f"no checkpoint found under {save_dir / 'weights'}")
     model = YOLO(str(checkpoint)).model
     layers = getattr(model, "model", None)
-    if layers is None or not hasattr(layers[P5_LAYER_INDEX], "block"):
+    if layers is None:
+        raise RuntimeError("checkpoint has no detector layer sequence")
+    if not all(torch.isfinite(parameter).all() for parameter in model.parameters()):
+        raise RuntimeError(f"{arch} checkpoint contains non-finite parameters")
+    params = sum(parameter.numel() for parameter in model.parameters())
+    if arch == "v1_p5":
+        if not hasattr(layers[P5_LAYER_INDEX], "block"):
+            raise RuntimeError(
+                "V1 checkpoint does not contain a LiteViT block at the P5 layer; "
+                "the architecture was discarded before training"
+            )
+        if params < 3_500_000:
+            raise RuntimeError(
+                f"V1 checkpoint has {params:,} parameters, which looks like the baseline"
+            )
+        block = layers[P5_LAYER_INDEX].block
+        if block.qkv.weight.detach().abs().sum().item() == 0.0:
+            raise RuntimeError(
+                "V1 block weights are zero; training likely produced NaN "
+                "and the checkpoint was sanitized"
+            )
+        return True
+    if not all(hasattr(layers[index], "gate") for index in GATE_LAYER_INDICES):
         raise RuntimeError(
-            "V1 checkpoint does not contain a LiteViT block at the P5 layer; "
+            "gate-only checkpoint does not contain gates at P3/P4/P5; "
             "the architecture was discarded before training"
         )
-    if not all(torch.isfinite(parameter).all() for parameter in model.parameters()):
-        raise RuntimeError("V1 checkpoint contains non-finite parameters")
-    params = sum(parameter.numel() for parameter in model.parameters())
-    if params < 3_500_000:
+    if params < 3_150_000 or params > 3_250_000:
         raise RuntimeError(
-            f"V1 checkpoint has {params:,} parameters, which looks like the baseline"
-        )
-    block = layers[P5_LAYER_INDEX].block
-    if block.qkv.weight.detach().abs().sum().item() == 0.0:
-        raise RuntimeError(
-            "V1 block weights are zero; training likely produced NaN "
-            "and the checkpoint was sanitized"
+            f"gate-only checkpoint has {params:,} parameters, outside the expected range"
         )
     return True
 
@@ -198,7 +211,10 @@ def train(
     config = resolve_paths(load_config(config_path), root)
     run_name = name or config.get("name") or "baseline"
     arch = str(config.get("arch", "baseline"))
-    trainer_cls = V1DetectionTrainer if arch == "v1_p5" else None
+    trainer_cls = {
+        "v1_p5": V1DetectionTrainer,
+        "gate_only": GateDetectionTrainer,
+    }.get(arch)
     tracker = _VramTracker()
     baseline_used = _gpu_used_mb()
     sampler, sampler_path = _start_gpu_sampler()
@@ -226,7 +242,7 @@ def train(
                 train_args["epochs"] = epochs
             if extra:
                 train_args.update(extra)
-            if arch not in {"baseline", "v1_p5"}:
+            if arch not in {"baseline", "v1_p5", "gate_only"}:
                 raise ValueError(f"unsupported architecture: {arch}")
             model = YOLO(str(config["model"]))
             for event in ("on_train_batch_end", "on_fit_epoch_end", "on_train_end"):

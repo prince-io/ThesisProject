@@ -1,22 +1,28 @@
 ---
 title: Project Overview
 status: draft
-date: 2026-11-08
+date: 2026-11-09
 sources:
   - ref/idea.md
   - experiments/dataset-adverse16k.md
   - experiments/EXP-0001-baseline.md
   - experiments/EXP-0002-cls-pw0.md
   - experiments/EXP-0003-v1-p5.md
+  - experiments/EXP-0004-weather-gate.md
   - results/baseline.md
   - results/ablation-comparison.md
   - findings/baseline-analysis.md
   - findings/ablation-analysis.md
   - findings/v1-invalid-run.md
+  - findings/v1-p5-analysis.md
+  - results/litevit_v1_p5.md
+  - results/litevit_v1_p5-error-analysis.md
   - decisions/ADR-0008-freeze-class-weighting.md
   - related-work/architecture-grounding.md
   - bibliography/references.bib
   - methodology/architecture.md
+  - methodology/weather-gate.md
+  - decisions/ADR-0009-weather-gate-design.md
 ---
 
 # Project Overview
@@ -76,9 +82,11 @@ V1 (one identity-initialized linear-attention block after P5/SPPF, before PAN/FP
 is implemented in `src/litevit/models/` and configured in
 `configs/train/litevit_v1_p5.yaml`. The first run was invalid because Ultralytics
 discarded the wrapper; `V1DetectionTrainer` now builds V1 inside trainer setup and
-verifies the saved checkpoint. The FP32 block passed a 10-epoch stability test with finite loss and a correct
-3.674 M block; the wrapper failed after training before metadata, and fallback
-logging was added. A repeat test and full run are pending (`EXP-0003`). V2 (P4 block) and V3 (weather gate) are not implemented.
+verifies the saved checkpoint. The FP32 block passed a 10-epoch stability test, and the full V1 run early-stopped at
+epoch 38 with best epoch 18. V1 improved slightly over the baseline at the same epoch
+but overfit afterwards and finished below the baseline on test; see
+`results/litevit_v1_p5.md`. The gate-only model (L-WG on P3/P4/P5) is implemented and
+pending training (`EXP-0004`). V2 (P4/P5 attention) is not implemented.
 
 ## Non-goals
 
@@ -86,7 +94,7 @@ logging was added. A repeat test and full run are pending (`EXP-0003`). V2 (P4 b
 
 ## Open questions
 
-- V1 P5-only LiteViT training and evaluation — pending.
-- V2/V3 architecture and memory feasibility — pending V1 results.
+- Gate-only weather adaptation training/evaluation — pending.
+- Whether to add a regularized P4/P5 attention block after gate-only — pending.
 - Multi-seed validation for final claims — pending.
 - Whether the test split should be reserved for the final model after Stage 2A reuse — pending.

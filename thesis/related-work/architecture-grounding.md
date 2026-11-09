@@ -96,3 +96,11 @@ V1 is implemented as a **falsifiable hypothesis**, not as a validated method:
 
 The architecture document is `thesis/methodology/architecture.md`. The run record is
 `thesis/experiments/EXP-0003-v1-p5.md`.
+
+## Gate-only status
+
+The first V1 result was negative: the P5 block overfit after epoch 18. The next run
+isolates the weather gate (`arch: gate_only`) on P3/P4/P5 with C/4, SiLU,
+`2*sigmoid`, and zero initialization. It adds 43,568 parameters and is documented in
+`thesis/methodology/weather-gate.md` and `thesis/decisions/ADR-0009-weather-gate-design.md`.
+The run record is `thesis/experiments/EXP-0004-weather-gate.md`.

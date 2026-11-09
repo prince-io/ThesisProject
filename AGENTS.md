@@ -11,7 +11,9 @@
 - `thesis/` is the curated source of truth for the final thesis document. `ref/` is a non-authoritative inbox of ideas, suggestions, and papers. `manuscript/` is the derived LaTeX write-up.
 - Dataset pipeline is implemented: `adverse16k` (16k images, 4 conditions, 5 classes) from ACDC + DAWN + BDD100K + RTTS.
 - YOLOv8n baseline is trained, evaluated, and error-analyzed (`EXP-0001`); results and findings are documented. The `cls_pw=0.0` ablation (`EXP-0002`) is complete; validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained (`ADR-0008`).
-- Architecture literature grounding is complete: verified citations in `thesis/bibliography/references.bib`, synthesis in `thesis/related-work/`, and an evidence-vs-assumption map in `thesis/related-work/architecture-grounding.md`. V1 (P5-only LiteViT) is implemented, but its first run was invalid because Ultralytics discarded the wrapper; the trainer fix is in place, the FP32 block passed a 10-epoch stability test with finite loss and a correct 3.674 M block, but the wrapper failed after training before metadata; fallback logging was added, and a repeat test/full run are pending. The full LiteViT/weather-gate model (V2/V3) has not started.
+- Architecture literature grounding is complete: verified citations in `thesis/bibliography/references.bib`, synthesis in `thesis/related-work/`, and an evidence-vs-assumption map in `thesis/related-work/architecture-grounding.md`.
+- V1 (P5-only LiteViT) is complete (`EXP-0003`): it early-stopped at epoch 38, best epoch 18, and underperformed the baseline on test.
+- Gate-only weather adaptation (L-WG on P3/P4/P5, `EXP-0004`) is implemented; training/evaluation are pending. V2 (P4/P5 attention) has not started.
 
 ## Core Contract
 
@@ -120,6 +122,10 @@ Default section order:
 - V1 evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/litevit_v1_p5_seed42_v2/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/litevit_v1_p5_seed42_v2 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/litevit_v1_p5`.
 - V1 error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/litevit_v1_p5_seed42_v2/weights/best.pt --out runs/eval/litevit_v1_p5_seed42_v2/error_analysis --splits val test`.
 - V1 document: `.venv/bin/python scripts/document_results.py --train-run runs/train/litevit_v1_p5_seed42_v2 --eval-run runs/eval/litevit_v1_p5_seed42_v2 --results thesis/results/litevit_v1_p5.md --experiment thesis/experiments/EXP-0003-v1-p5.md --figures-dir thesis/results/figures/litevit_v1_p5 --vram-report runs/train/litevit_v1_p5_seed42_v2/vram.json --title "V1 Results — P5 LiteViT" --experiment-title "EXP-0003 — V1 P5 LiteViT"`.
+- Weather gate train: `.venv/bin/python scripts/train.py --config configs/train/weather_gate.yaml --name weather_gate_seed42`.
+- Weather gate evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/weather_gate_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/weather_gate_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/weather_gate`.
+- Weather gate error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/weather_gate_seed42/weights/best.pt --out runs/eval/weather_gate_seed42/error_analysis --splits val test`.
+- Weather gate document: `.venv/bin/python scripts/document_results.py --train-run runs/train/weather_gate_seed42 --eval-run runs/eval/weather_gate_seed42 --results thesis/results/weather_gate.md --experiment thesis/experiments/EXP-0004-weather-gate.md --figures-dir thesis/results/figures/weather_gate --vram-report runs/train/weather_gate_seed42/vram.json --title "Weather Gate Results" --experiment-title "EXP-0004 — Gate-Only Weather Adaptation"`.
 - `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 
 ## Child DOX Index

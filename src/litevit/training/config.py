@@ -7,7 +7,7 @@ from pathlib import Path
 import yaml
 
 REQUIRED_KEYS = ("model", "data", "epochs", "imgsz", "batch")
-ALLOWED_ARCHS = ("baseline", "v1_p5")
+ALLOWED_ARCHS = ("baseline", "v1_p5", "gate_only")
 DEFAULT_PROJECT = "runs/train"
 
 

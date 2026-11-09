@@ -33,3 +33,4 @@ Record durable thesis decisions as append-only ADRs.
 - `ADR-0006-baseline-protocol.md`
 - `ADR-0007-measurement-and-analysis-protocol.md`
 - `ADR-0008-freeze-class-weighting.md`
+- `ADR-0009-weather-gate-design.md`

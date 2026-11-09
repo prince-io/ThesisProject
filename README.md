@@ -15,11 +15,10 @@ Environment and the `adverse16k` dataset are ready. The YOLOv8n baseline is trai
 evaluated, and error-analyzed (`EXP-0001`). The `cls_pw=0.0` ablation (`EXP-0002`) is
 complete: validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained
 for later comparisons (`ADR-0008`). Architecture literature grounding is complete in
-`thesis/bibliography/` and `thesis/related-work/`. V1 (P5-only LiteViT) is implemented; the first run was invalid because Ultralytics
-discarded the wrapper. The trainer fix is in place; the FP32 block passed a 10-epoch stability test with
-finite loss and a correct 3.674 M block. The wrapper failed after training before
-metadata; fallback logging was added. A repeat test/full run are pending. The full LiteViT/weather-gate model
-(V2/V3) has not started.
+`thesis/bibliography/` and `thesis/related-work/`. V1 (P5-only LiteViT, `EXP-0003`)
+early-stopped at epoch 38 and underperformed the baseline on test. Gate-only weather
+adaptation (L-WG on P3/P4/P5, `EXP-0004`) is implemented; training/evaluation are
+pending. V2/V3 attention work has not started.
 
 ## Code layout
 
@@ -180,6 +179,47 @@ V1 inserts one identity-initialized LiteViT block after the P5/SPPF backbone lay
   --vram-report runs/train/litevit_v1_p5_seed42_v2/vram.json \
   --title "V1 Results — P5 LiteViT" \
   --experiment-title "EXP-0003 — V1 P5 LiteViT"
+```
+
+## Weather gate only (EXP-0004)
+
+YOLOv8n + Lightweight Weather Gate on neck P3/P4/P5. The gate is identity-initialized
+and adds 43,568 parameters. See `thesis/methodology/weather-gate.md` and
+`thesis/experiments/EXP-0004-weather-gate.md`.
+
+```bash
+# Optional 5-epoch smoke run
+.venv/bin/python scripts/train.py \
+  --config configs/train/weather_gate.yaml \
+  --name weather_gate_smoke --epochs 5
+
+# Full gate-only run
+.venv/bin/python scripts/train.py \
+  --config configs/train/weather_gate.yaml \
+  --name weather_gate_seed42
+
+.venv/bin/python scripts/evaluate.py \
+  --weights runs/train/weather_gate_seed42/weights/best.pt \
+  --data configs/datasets/adverse16k.yaml \
+  --splits val test \
+  --out runs/eval/weather_gate_seed42 \
+  --subsets data/processed/adverse16k/subsets \
+  --figures-dir thesis/results/figures/weather_gate
+
+.venv/bin/python scripts/error_analysis.py \
+  --weights runs/train/weather_gate_seed42/weights/best.pt \
+  --out runs/eval/weather_gate_seed42/error_analysis \
+  --splits val test
+
+.venv/bin/python scripts/document_results.py \
+  --train-run runs/train/weather_gate_seed42 \
+  --eval-run runs/eval/weather_gate_seed42 \
+  --results thesis/results/weather_gate.md \
+  --experiment thesis/experiments/EXP-0004-weather-gate.md \
+  --figures-dir thesis/results/figures/weather_gate \
+  --vram-report runs/train/weather_gate_seed42/vram.json \
+  --title "Weather Gate Results" \
+  --experiment-title "EXP-0004 — Gate-Only Weather Adaptation"
 ```
 
 ## Conventions

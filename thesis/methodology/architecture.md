@@ -133,7 +133,8 @@ expected mAP gain are hypotheses. See
 ## V2/V3 extensions
 
 - V2: add a LiteViT-P4 block after the backbone P4 C2f layer.
-- V3: add the Lightweight Weather Gate (L-WG) on neck P3/P4/P5 outputs.
-- Optional: gate-only ablation to isolate the weather gate.
+- V3: combine P4/P5 attention with the Lightweight Weather Gate (L-WG).
+- Gate-only (L-WG on P3/P4/P5) is implemented separately as `EXP-0004`; see
+  `weather-gate.md`.
 
-These are not implemented in V1.
+V2 and the combined V3 are not implemented yet.

@@ -20,6 +20,7 @@ Hold automated verification for the `litevit` package.
 - Dataset class mapping (including BDD legacy aliases), box conversion, condition assignment, sequence assignment, dHash grouping, and split arithmetic are covered in `test_dataset_pipeline.py` and `test_acdc_test.py`.
 - Training config validation, eval-subset generation, and metric aggregation are covered in `test_training.py`; IoU matching and size bins are covered in `test_error_analysis.py`.
 - LiteViT block shape/identity, parameter budget, wrapper metadata, and V1 integration are covered in `test_litevit_models.py`.
+- Weather gate identity, parameter budget, wrapper metadata, and gate-only integration are covered in `test_weather_gate.py`.
 
 ## Verification
 
