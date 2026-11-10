@@ -19,7 +19,11 @@ from ultralytics import YOLO
 
 from litevit.models.build import GATE_LAYER_INDICES, P5_LAYER_INDEX
 from litevit.training.config import load_config, resolve_paths
-from litevit.training.trainer import GateDetectionTrainer, V1DetectionTrainer
+from litevit.training.trainer import (
+    GateDetectionTrainer,
+    GateP5DetectionTrainer,
+    V1DetectionTrainer,
+)
 
 
 def _git_commit(root: Path) -> str:
@@ -109,7 +113,7 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
     """Fail the run if the saved checkpoint does not contain the requested architecture."""
     if arch == "baseline":
         return True
-    if arch not in {"v1_p5", "gate_only"}:
+    if arch not in {"v1_p5", "gate_only", "gate_p5"}:
         raise ValueError(f"unsupported architecture: {arch}")
     checkpoint = save_dir / "weights/best.pt"
     if not checkpoint.exists():
@@ -142,9 +146,25 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
         return True
     if not all(hasattr(layers[index], "gate") for index in GATE_LAYER_INDICES):
         raise RuntimeError(
-            "gate-only checkpoint does not contain gates at P3/P4/P5; "
+            f"{arch} checkpoint does not contain gates at P3/P4/P5; "
             "the architecture was discarded before training"
         )
+    if arch == "gate_p5":
+        if not hasattr(layers[P5_LAYER_INDEX], "block"):
+            raise RuntimeError(
+                "A+B checkpoint does not contain a LiteViT block at P5"
+            )
+        block = layers[P5_LAYER_INDEX].block
+        if block.qkv.weight.detach().abs().sum().item() == 0.0:
+            raise RuntimeError(
+                "A+B block weights are zero; training likely produced NaN "
+                "and the checkpoint was sanitized"
+            )
+        if params < 3_500_000 or params > 3_700_000:
+            raise RuntimeError(
+                f"A+B checkpoint has {params:,} parameters, outside the expected range"
+            )
+        return True
     if params < 3_150_000 or params > 3_250_000:
         raise RuntimeError(
             f"gate-only checkpoint has {params:,} parameters, outside the expected range"
@@ -214,6 +234,7 @@ def train(
     trainer_cls = {
         "v1_p5": V1DetectionTrainer,
         "gate_only": GateDetectionTrainer,
+        "gate_p5": GateP5DetectionTrainer,
     }.get(arch)
     tracker = _VramTracker()
     baseline_used = _gpu_used_mb()
@@ -242,7 +263,7 @@ def train(
                 train_args["epochs"] = epochs
             if extra:
                 train_args.update(extra)
-            if arch not in {"baseline", "v1_p5", "gate_only"}:
+            if arch not in {"baseline", "v1_p5", "gate_only", "gate_p5"}:
                 raise ValueError(f"unsupported architecture: {arch}")
             model = YOLO(str(config["model"]))
             for event in ("on_train_batch_end", "on_fit_epoch_end", "on_train_end"):

@@ -7,7 +7,7 @@ import traceback
 from ultralytics.models.yolo.detect import DetectionTrainer
 from ultralytics.utils import LOGGER
 
-from litevit.models import wrap_gate_only, wrap_v1_p5
+from litevit.models import wrap_gate_only, wrap_gate_p5, wrap_v1_p5
 from litevit.models.build import GATE_LAYER_INDICES, P5_LAYER_INDEX
 
 
@@ -78,3 +78,15 @@ class GateDetectionTrainer(LiteDetectionTrainer):
 
     def _wrap_model(self, model):
         return wrap_gate_only(model)
+
+
+class GateP5DetectionTrainer(LiteDetectionTrainer):
+    """Build regularized P5 attention plus P3/P4/P5 gates inside trainer setup."""
+
+    def _is_wrapped(self, model) -> bool:
+        return hasattr(model.model[P5_LAYER_INDEX], "block") and all(
+            hasattr(model.model[index], "gate") for index in GATE_LAYER_INDICES
+        )
+
+    def _wrap_model(self, model):
+        return wrap_gate_p5(model)

@@ -13,7 +13,8 @@
 - YOLOv8n baseline is trained, evaluated, and error-analyzed (`EXP-0001`); results and findings are documented. The `cls_pw=0.0` ablation (`EXP-0002`) is complete; validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is retained (`ADR-0008`).
 - Architecture literature grounding is complete: verified citations in `thesis/bibliography/references.bib`, synthesis in `thesis/related-work/`, and an evidence-vs-assumption map in `thesis/related-work/architecture-grounding.md`.
 - V1 (P5-only LiteViT) is complete (`EXP-0003`): it early-stopped at epoch 38, best epoch 18, and underperformed the baseline on test.
-- Gate-only weather adaptation (L-WG on P3/P4/P5, `EXP-0004`) is implemented; training/evaluation are pending. V2 (P4/P5 attention) has not started.
+- Gate-only weather adaptation (L-WG on P3/P4/P5, `EXP-0004`) is complete: test mAP50 0.5444 / mAP50-95 0.3301 vs baseline 0.5428 / 0.3287; validation is slightly lower but training is stable.
+- A+B (gate + regularized P5 attention, `EXP-0005`) is implemented; training/evaluation are pending. V2 (P4/P5 attention) has not started.
 
 ## Core Contract
 
@@ -126,6 +127,10 @@ Default section order:
 - Weather gate evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/weather_gate_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/weather_gate_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/weather_gate`.
 - Weather gate error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/weather_gate_seed42/weights/best.pt --out runs/eval/weather_gate_seed42/error_analysis --splits val test`.
 - Weather gate document: `.venv/bin/python scripts/document_results.py --train-run runs/train/weather_gate_seed42 --eval-run runs/eval/weather_gate_seed42 --results thesis/results/weather_gate.md --experiment thesis/experiments/EXP-0004-weather-gate.md --figures-dir thesis/results/figures/weather_gate --vram-report runs/train/weather_gate_seed42/vram.json --title "Weather Gate Results" --experiment-title "EXP-0004 — Gate-Only Weather Adaptation"`.
+- A+B train: `.venv/bin/python scripts/train.py --config configs/train/gate_p5.yaml --name gate_p5_seed42`.
+- A+B evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/gate_p5_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/gate_p5_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/gate_p5`.
+- A+B error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/gate_p5_seed42/weights/best.pt --out runs/eval/gate_p5_seed42/error_analysis --splits val test`.
+- A+B document: `.venv/bin/python scripts/document_results.py --train-run runs/train/gate_p5_seed42 --eval-run runs/eval/gate_p5_seed42 --results thesis/results/gate_p5.md --experiment thesis/experiments/EXP-0005-gate-p5.md --figures-dir thesis/results/figures/gate_p5 --vram-report runs/train/gate_p5_seed42/vram.json --title "A+B Results — Gate + Regularized P5 Attention" --experiment-title "EXP-0005 — Gate + Regularized P5 Attention"`.
 - `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 
 ## Child DOX Index

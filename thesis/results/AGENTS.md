@@ -22,7 +22,9 @@ Hold measured outcomes as facts: metrics, tables, and comparisons tied to a run 
 - Ablation facts: `ablation_cls_pw0.md`, `ablation_cls_pw0-error-analysis.md`, and `ablation-comparison.md`.
 - V1 facts: `litevit_v1_p5.md` and `litevit_v1_p5-error-analysis.md`.
 - The invalid V1 predecessor has no curated results doc; it is documented in `../findings/v1-invalid-run.md`.
-- Gate-only results are generated to `weather_gate.md` when `EXP-0004` completes.
+- Gate-only facts: `weather_gate.md` and `weather_gate-error-analysis.md`.
+- Cross-variant facts: `architecture-comparison.md`.
+- A+B results will be generated to `gate_p5.md` when `EXP-0005` completes.
 - Raw error-analysis data stays in `runs/eval/<run>/error_analysis/`.
 - Curated figures live in `thesis/results/figures/`; full plots stay in `runs/`.
 - VRAM values must be labeled as training-PyTorch, training-GPU-used, or inference.

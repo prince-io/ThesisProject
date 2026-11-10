@@ -74,6 +74,21 @@ def test_load_config_accepts_gate_arch(tmp_path: Path) -> None:
     assert config["arch"] == "gate_only"
 
 
+def test_load_config_accepts_gate_p5_arch(tmp_path: Path) -> None:
+    config_path = tmp_path / "train.yaml"
+    config_path.write_text(
+        "model: yolov8n.pt\n"
+        "arch: gate_p5\n"
+        "data: data.yaml\n"
+        "epochs: 1\n"
+        "imgsz: 640\n"
+        "batch: 4\n",
+        encoding="utf-8",
+    )
+    config = load_config(config_path)
+    assert config["arch"] == "gate_p5"
+
+
 def test_load_config_rejects_bad_arch(tmp_path: Path) -> None:
     config_path = tmp_path / "train.yaml"
     config_path.write_text(

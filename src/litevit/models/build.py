@@ -12,6 +12,10 @@ from litevit.models.gates import GATE_REDUCTION, GATE_SCALE, FeatureWithGate, We
 
 P5_LAYER_INDEX = 9
 GATE_LAYER_INDICES = (15, 18, 21)
+GATE_P5_HEADS = 4
+GATE_P5_MLP_RATIO = 1.0
+GATE_P5_DROP_PATH = 0.2
+GATE_P5_DROPOUT = 0.1
 
 
 def _infer_out_channels(module: nn.Module) -> int:
@@ -30,6 +34,8 @@ def wrap_v1_p5(
     detection: nn.Module,
     heads: int = 4,
     mlp_ratio: float = 2.0,
+    drop_path: float = 0.0,
+    dropout: float = 0.0,
 ) -> nn.Module:
     """Wrap the P5/SPPF layer of an existing detection model in place."""
     layers = getattr(detection, "model", None)
@@ -41,7 +47,13 @@ def wrap_v1_p5(
         )
     base = layers[P5_LAYER_INDEX]
     dim = _infer_out_channels(base)
-    block = LiteViTBlock(dim, heads=heads, mlp_ratio=mlp_ratio)
+    block = LiteViTBlock(
+        dim,
+        heads=heads,
+        mlp_ratio=mlp_ratio,
+        drop_path=drop_path,
+        dropout=dropout,
+    )
     layers[P5_LAYER_INDEX] = FeatureWithBlock(base, block)
     return detection
 
@@ -50,6 +62,8 @@ def build_v1_p5(
     weights: str | Path = "yolov8n.pt",
     heads: int = 4,
     mlp_ratio: float = 2.0,
+    drop_path: float = 0.0,
+    dropout: float = 0.0,
 ) -> YOLO:
     """Build V1: one LiteViT block after the P5/SPPF backbone layer.
 
@@ -60,7 +74,13 @@ def build_v1_p5(
     model = YOLO(str(weights))
     if model.model is None:
         raise RuntimeError("YOLO model has no detector attached")
-    wrap_v1_p5(model.model, heads=heads, mlp_ratio=mlp_ratio)
+    wrap_v1_p5(
+        model.model,
+        heads=heads,
+        mlp_ratio=mlp_ratio,
+        drop_path=drop_path,
+        dropout=dropout,
+    )
     return model
 
 
@@ -98,4 +118,43 @@ def build_gate_only(
     if model.model is None:
         raise RuntimeError("YOLO model has no detector attached")
     wrap_gate_only(model.model, reduction=reduction, scale=scale)
+    return model
+
+
+def wrap_gate_p5(
+    detection: nn.Module,
+    heads: int = GATE_P5_HEADS,
+    mlp_ratio: float = GATE_P5_MLP_RATIO,
+    drop_path: float = GATE_P5_DROP_PATH,
+    dropout: float = GATE_P5_DROPOUT,
+) -> nn.Module:
+    """Wrap P5 attention and P3/P4/P5 weather gates on an existing detector."""
+    wrap_v1_p5(
+        detection,
+        heads=heads,
+        mlp_ratio=mlp_ratio,
+        drop_path=drop_path,
+        dropout=dropout,
+    )
+    return wrap_gate_only(detection)
+
+
+def build_gate_p5(
+    weights: str | Path = "yolov8n.pt",
+    heads: int = GATE_P5_HEADS,
+    mlp_ratio: float = GATE_P5_MLP_RATIO,
+    drop_path: float = GATE_P5_DROP_PATH,
+    dropout: float = GATE_P5_DROPOUT,
+) -> YOLO:
+    """Build A+B: regularized P5 attention plus P3/P4/P5 weather gates."""
+    model = YOLO(str(weights))
+    if model.model is None:
+        raise RuntimeError("YOLO model has no detector attached")
+    wrap_gate_p5(
+        model.model,
+        heads=heads,
+        mlp_ratio=mlp_ratio,
+        drop_path=drop_path,
+        dropout=dropout,
+    )
     return model

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import torch
 import torch.nn.functional as F
+from timm.layers import DropPath
 from torch import nn
 
 
@@ -64,7 +65,7 @@ class LinearAttention2d(nn.Module):
 class ConvFFN(nn.Module):
     """Two-layer ConvFFN with a depthwise 3x3 local mixing stage."""
 
-    def __init__(self, channels: int, ratio: float = 2.0) -> None:
+    def __init__(self, channels: int, ratio: float = 2.0, dropout: float = 0.0) -> None:
         super().__init__()
         hidden = int(channels * ratio)
         if hidden < 1:
@@ -73,10 +74,11 @@ class ConvFFN(nn.Module):
         self.dw = nn.Conv2d(hidden, hidden, kernel_size=3, padding=1, groups=hidden)
         self.fc2 = nn.Conv2d(hidden, channels, kernel_size=1)
         self.act = nn.GELU()
+        self.drop = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.act(self.fc1(x))
-        x = self.act(self.dw(x))
+        x = self.drop(self.act(self.fc1(x)))
+        x = self.drop(self.act(self.dw(x)))
         return self.fc2(x)
 
 
@@ -94,6 +96,8 @@ class LiteViTBlock(nn.Module):
         heads: int = 4,
         mlp_ratio: float = 2.0,
         layer_scale_init: float = 0.0,
+        drop_path: float = 0.0,
+        dropout: float = 0.0,
     ) -> None:
         super().__init__()
         self.channels = channels
@@ -101,11 +105,14 @@ class LiteViTBlock(nn.Module):
         self.cpe = nn.Conv2d(channels, channels, kernel_size=3, padding=1, groups=channels)
         self.qkv = nn.Conv2d(channels, 3 * channels, kernel_size=1)
         self.attention = LinearAttention2d(channels, heads=heads)
+        self.attn_drop = nn.Dropout(dropout)
         self.proj = nn.Conv2d(channels, channels, kernel_size=1)
         self.gamma1 = nn.Parameter(torch.full((1, channels, 1, 1), layer_scale_init))
         self.norm2 = LayerNorm2d(channels)
-        self.ffn = ConvFFN(channels, ratio=mlp_ratio)
+        self.ffn = ConvFFN(channels, ratio=mlp_ratio, dropout=dropout)
         self.gamma2 = nn.Parameter(torch.full((1, channels, 1, 1), layer_scale_init))
+        self.drop_path1 = DropPath(drop_path)
+        self.drop_path2 = DropPath(drop_path)
         self._init_weights()
 
     def _init_weights(self) -> None:
@@ -120,9 +127,9 @@ class LiteViTBlock(nn.Module):
             x = x.float()
             y = self.norm1(x)
             y = y + self.cpe(y)
-            y = self.attention(self.qkv(y))
-            x = x + self.gamma1 * self.proj(y)
-            x = x + self.gamma2 * self.ffn(self.norm2(x))
+            y = self.attn_drop(self.attention(self.qkv(y)))
+            x = x + self.drop_path1(self.gamma1 * self.proj(y))
+            x = x + self.drop_path2(self.gamma2 * self.ffn(self.norm2(x)))
         return x.to(dtype=input_dtype)
 
 

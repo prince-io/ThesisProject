@@ -17,8 +17,10 @@ complete: validation is tied, test mAP is slightly lower, and `cls_pw=0.5` is re
 for later comparisons (`ADR-0008`). Architecture literature grounding is complete in
 `thesis/bibliography/` and `thesis/related-work/`. V1 (P5-only LiteViT, `EXP-0003`)
 early-stopped at epoch 38 and underperformed the baseline on test. Gate-only weather
-adaptation (L-WG on P3/P4/P5, `EXP-0004`) is implemented; training/evaluation are
-pending. V2/V3 attention work has not started.
+adaptation (L-WG on P3/P4/P5, `EXP-0004`) is complete: test mAP50 0.5444 /
+mAP50-95 0.3301 vs baseline 0.5428 / 0.3287; validation is slightly lower but
+training is stable. A+B (gate + regularized P5 attention, `EXP-0005`) is implemented; training/evaluation
+are pending. V2/V3 attention work has not started.
 
 ## Code layout
 
@@ -220,6 +222,48 @@ and adds 43,568 parameters. See `thesis/methodology/weather-gate.md` and
   --vram-report runs/train/weather_gate_seed42/vram.json \
   --title "Weather Gate Results" \
   --experiment-title "EXP-0004 — Gate-Only Weather Adaptation"
+```
+
+## A+B: gate + regularized P5 attention (EXP-0005)
+
+YOLOv8n with a regularized P5 LiteViT block and P3/P4/P5 weather gates. The block
+uses DropPath 0.2, dropout 0.1, MLP ratio 1.0, and FP32 execution. Total: 3,583,951
+parameters and 9.099 GFLOPs. See `thesis/methodology/gate-p5.md` and
+`thesis/experiments/EXP-0005-gate-p5.md`.
+
+```bash
+# Optional 5-epoch smoke run
+.venv/bin/python scripts/train.py \
+  --config configs/train/gate_p5.yaml \
+  --name gate_p5_smoke --epochs 5
+
+# Full A+B run
+.venv/bin/python scripts/train.py \
+  --config configs/train/gate_p5.yaml \
+  --name gate_p5_seed42
+
+.venv/bin/python scripts/evaluate.py \
+  --weights runs/train/gate_p5_seed42/weights/best.pt \
+  --data configs/datasets/adverse16k.yaml \
+  --splits val test \
+  --out runs/eval/gate_p5_seed42 \
+  --subsets data/processed/adverse16k/subsets \
+  --figures-dir thesis/results/figures/gate_p5
+
+.venv/bin/python scripts/error_analysis.py \
+  --weights runs/train/gate_p5_seed42/weights/best.pt \
+  --out runs/eval/gate_p5_seed42/error_analysis \
+  --splits val test
+
+.venv/bin/python scripts/document_results.py \
+  --train-run runs/train/gate_p5_seed42 \
+  --eval-run runs/eval/gate_p5_seed42 \
+  --results thesis/results/gate_p5.md \
+  --experiment thesis/experiments/EXP-0005-gate-p5.md \
+  --figures-dir thesis/results/figures/gate_p5 \
+  --vram-report runs/train/gate_p5_seed42/vram.json \
+  --title "A+B Results — Gate + Regularized P5 Attention" \
+  --experiment-title "EXP-0005 — Gate + Regularized P5 Attention"
 ```
 
 ## Conventions

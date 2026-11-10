@@ -136,5 +136,7 @@ expected mAP gain are hypotheses. See
 - V3: combine P4/P5 attention with the Lightweight Weather Gate (L-WG).
 - Gate-only (L-WG on P3/P4/P5) is implemented separately as `EXP-0004`; see
   `weather-gate.md`.
+- A+B (gate + regularized P5 attention) is implemented as `EXP-0005`; see
+  `gate-p5.md`.
 
-V2 and the combined V3 are not implemented yet.
+V2 (P4 attention) is not implemented yet.

@@ -1,7 +1,7 @@
 ---
 title: Project Overview
 status: draft
-date: 2026-11-09
+date: 2026-11-10
 sources:
   - ref/idea.md
   - experiments/dataset-adverse16k.md
@@ -9,6 +9,7 @@ sources:
   - experiments/EXP-0002-cls-pw0.md
   - experiments/EXP-0003-v1-p5.md
   - experiments/EXP-0004-weather-gate.md
+  - experiments/EXP-0005-gate-p5.md
   - results/baseline.md
   - results/ablation-comparison.md
   - findings/baseline-analysis.md
@@ -17,12 +18,18 @@ sources:
   - findings/v1-p5-analysis.md
   - results/litevit_v1_p5.md
   - results/litevit_v1_p5-error-analysis.md
+  - results/weather_gate.md
+  - results/weather_gate-error-analysis.md
+  - results/architecture-comparison.md
+  - findings/weather-gate-analysis.md
   - decisions/ADR-0008-freeze-class-weighting.md
   - related-work/architecture-grounding.md
   - bibliography/references.bib
   - methodology/architecture.md
   - methodology/weather-gate.md
+  - methodology/gate-p5.md
   - decisions/ADR-0009-weather-gate-design.md
+  - decisions/ADR-0010-gate-p5-design.md
 ---
 
 # Project Overview
@@ -85,8 +92,17 @@ discarded the wrapper; `V1DetectionTrainer` now builds V1 inside trainer setup a
 verifies the saved checkpoint. The FP32 block passed a 10-epoch stability test, and the full V1 run early-stopped at
 epoch 38 with best epoch 18. V1 improved slightly over the baseline at the same epoch
 but overfit afterwards and finished below the baseline on test; see
-`results/litevit_v1_p5.md`. The gate-only model (L-WG on P3/P4/P5) is implemented and
-pending training (`EXP-0004`). V2 (P4/P5 attention) is not implemented.
+`results/litevit_v1_p5.md`.
+
+Gate-only (L-WG on P3/P4/P5) is complete (`EXP-0004`): test mAP50 0.5444 vs baseline
+0.5428 and mAP50-95 0.3301 vs 0.3287; validation is slightly lower, but training is
+stable for 100 epochs and night/rain plus bicycle/bus show small gains. See
+`results/weather_gate.md`, `results/architecture-comparison.md`, and
+`findings/weather-gate-analysis.md`.
+
+A+B (gate + regularized P5 attention: DropPath 0.2, dropout 0.1, MLP ratio 1.0) is
+implemented and pending training (`EXP-0005`). It has 3.584 M parameters and
+9.099 GFLOPs. V2 (P4/P5 attention) is not implemented.
 
 ## Non-goals
 
@@ -94,7 +110,7 @@ pending training (`EXP-0004`). V2 (P4/P5 attention) is not implemented.
 
 ## Open questions
 
-- Gate-only weather adaptation training/evaluation — pending.
-- Whether to add a regularized P4/P5 attention block after gate-only — pending.
+- A+B (gate + regularized P5 attention) training/evaluation — pending (`EXP-0005`).
+- Multi-seed validation of gate-only/A+B — pending.
 - Multi-seed validation for final claims — pending.
 - Whether the test split should be reserved for the final model after Stage 2A reuse — pending.

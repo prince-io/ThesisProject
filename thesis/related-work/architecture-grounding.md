@@ -103,4 +103,8 @@ The first V1 result was negative: the P5 block overfit after epoch 18. The next 
 isolates the weather gate (`arch: gate_only`) on P3/P4/P5 with C/4, SiLU,
 `2*sigmoid`, and zero initialization. It adds 43,568 parameters and is documented in
 `thesis/methodology/weather-gate.md` and `thesis/decisions/ADR-0009-weather-gate-design.md`.
-The run record is `thesis/experiments/EXP-0004-weather-gate.md`.
+The run record is `thesis/experiments/EXP-0004-weather-gate.md`; the result is a small test gain with slightly lower validation, documented in `thesis/findings/weather-gate-analysis.md`.
+
+A+B combines that gate with a regularized P5 block (DropPath 0.2, dropout 0.1,
+MLP ratio 1.0). It is implemented and pending `EXP-0005`; see
+`thesis/methodology/gate-p5.md` and `thesis/decisions/ADR-0010-gate-p5-design.md`.

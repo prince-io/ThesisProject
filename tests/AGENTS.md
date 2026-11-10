@@ -21,6 +21,7 @@ Hold automated verification for the `litevit` package.
 - Training config validation, eval-subset generation, and metric aggregation are covered in `test_training.py`; IoU matching and size bins are covered in `test_error_analysis.py`.
 - LiteViT block shape/identity, parameter budget, wrapper metadata, and V1 integration are covered in `test_litevit_models.py`.
 - Weather gate identity, parameter budget, wrapper metadata, and gate-only integration are covered in `test_weather_gate.py`.
+- A+B combined block/gate construction, identity, and parameter budget are covered in `test_gate_p5.py`.
 
 ## Verification
 

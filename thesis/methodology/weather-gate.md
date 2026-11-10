@@ -102,4 +102,4 @@ only 43.6k parameters.
 
 ## Status
 
-Implemented. Training and evaluation are pending (`EXP-0004`).
+Implemented and evaluated (`EXP-0004`).

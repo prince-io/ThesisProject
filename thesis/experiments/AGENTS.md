@@ -22,6 +22,7 @@ Hold curated records of dataset preparation and experiments: what was built/run 
 - `EXP-0001-baseline.md` records the YOLOv8n reference run; `EXP-0002-cls-pw0.md` records the completed class-weighting ablation.
 - `EXP-0003-v1-p5.md` records the corrected V1 P5-only LiteViT experiment; the invalid predecessor is documented in `../findings/v1-invalid-run.md`.
 - `EXP-0004-weather-gate.md` records the gate-only weather-adaptation experiment.
+- `EXP-0005-gate-p5.md` records A+B: gate plus regularized P5 attention.
 - `README.md` is the experiment registry; update it when a run is added or completes.
 
 ## Verification

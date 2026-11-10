@@ -1,7 +1,7 @@
 ---
 title: Thesis Knowledge Base Index
 status: draft
-date: 2026-11-09
+date: 2026-11-10
 sources:
   - thesis/overview.md
   - thesis/experiments/README.md
@@ -33,7 +33,8 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - Architecture literature grounding is complete: verified BibTeX entries are in `bibliography/references.bib`; synthesis is in `related-work/`.
 - The design-choice → evidence → assumption map is in `related-work/architecture-grounding.md`.
 - V1 (P5-only LiteViT) is implemented and evaluated (`EXP-0003`); it early-stopped at epoch 38 and underperformed the baseline on test.
-- Gate-only weather adaptation (L-WG on P3/P4/P5) is implemented; training/evaluation are pending (`EXP-0004`).
+- Gate-only weather adaptation is complete (`EXP-0004`): test mAP50 0.5444 / mAP50-95 0.3301 vs baseline 0.5428 / 0.3287; validation is slightly lower but training is stable.
+- A+B (gate + regularized P5 attention) is implemented; training/evaluation are pending (`EXP-0005`).
 - V2 (P4/P5 attention) has not started.
 
 ## Field map

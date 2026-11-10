@@ -19,6 +19,7 @@ Hold the validated approach: architecture, training strategy, and design rationa
 - `training.md` records the baseline training/evaluation protocol.
 - `architecture.md` records the V1 P5 LiteViT design and integration.
 - `weather-gate.md` records the gate-only design, values, and parameter budget.
+- `gate-p5.md` records A+B: gate plus regularized P5 attention.
 - Add V2 (P4/P5 attention) methodology as implementation proceeds.
 
 ## Verification
