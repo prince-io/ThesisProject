@@ -23,6 +23,7 @@ Hold automated verification for the `litevit` package.
 - Weather gate identity, parameter budget, wrapper metadata, and gate-only integration are covered in `test_weather_gate.py`.
 - A+B combined block/gate construction, identity, and parameter budget are covered in `test_gate_p5.py`.
 - Sobel edge, spatial CBAM, gate+edge+CBAM identity, and parameter budget are covered in `test_gate_edge_cbam.py`.
+- P2 four-level head construction, branch preservation, forward shapes, idempotence, checkpoint reload, and architecture verification are covered in `test_gate_p2.py`.
 
 ## Verification
 

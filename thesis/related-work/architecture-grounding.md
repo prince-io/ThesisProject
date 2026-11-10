@@ -111,5 +111,9 @@ MLP ratio 1.0). It is complete and neutral on test (`EXP-0005`); see
 
 The kitchen-sink model adds Sobel edge residuals at P3/P4 and spatial CBAM
 (`EXP-0006`); see `thesis/methodology/gate-edge-cbam.md` and
-`thesis/decisions/ADR-0011-gate-edge-cbam-design.md`. TTA was tested and rejected
-because it reduced accuracy.`
+`thesis/decisions/ADR-0011-gate-edge-cbam-design.md`. It was neutral on test.
+TTA was tested and rejected because it reduced accuracy.
+
+The P2 model adds a stride-4 detection level to gate-only (`EXP-0007`); see
+`thesis/methodology/p2-head.md` and `thesis/decisions/ADR-0012-p2-head-design.md`.
+This is a resolution hypothesis for tiny objects, not another attention module.

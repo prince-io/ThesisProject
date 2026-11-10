@@ -25,9 +25,11 @@ pretrained Ultralytics YOLO models.
   FeatureWithBlock.
 - `gates.py` — WeatherGate, SpatialAttention, GateWithSpatial, FeatureWithGate.
 - `edge.py` — fixed Sobel EdgeEnhance and FeatureWithEdge (P3/P4).
-- `build.py` — V1, gate-only, A+B, and kitchen-sink builders
-  (`wrap_gate_edge_cbam`/`build_gate_edge_cbam`).
-- V2 (P4 attention) is not implemented yet; V1, gate-only, A+B, and kitchen sink are implemented.
+- `p2.py` — append a stride-4 P2 detection branch while preserving the pretrained
+  P3/P4/P5 Detect branches.
+- `build.py` — V1, gate-only, P2, A+B, and kitchen-sink builders
+  (`wrap_gate_p2`/`build_gate_p2`, `wrap_gate_edge_cbam`/`build_gate_edge_cbam`).
+- V2 (P4 attention) is not implemented yet; V1, gate-only, P2, A+B, and kitchen sink are implemented.
 - Add tests in `tests/test_litevit_models.py` for shape, identity, parameter budget,
   and integration.
 

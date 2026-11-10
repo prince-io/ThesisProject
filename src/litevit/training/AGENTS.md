@@ -17,8 +17,8 @@ Run training jobs, build evaluation subsets, and evaluate detectors overall and 
 
 ## Work Guidance
 
-- `train.py` wraps Ultralytics training, selects `baseline`, `v1_p5`, `gate_only`, `gate_p5`, or `gate_edge_cbam` from the config `arch`, verifies the saved architecture, writes run metadata, records labeled VRAM metrics, and logs training exceptions to `train_error.txt`.
-- `trainer.py` implements `LiteDetectionTrainer`, `V1DetectionTrainer`, `GateDetectionTrainer`, `GateP5DetectionTrainer`, and `GateEdgeCBAMTrainer`, which build and wrap variants inside Ultralytics `get_model` so wrappers survive trainer setup; it logs post-training validation/plot failures and falls back to live validation.
+- `train.py` wraps Ultralytics training, selects `baseline`, `v1_p5`, `gate_only`, `gate_p2`, `gate_p5`, or `gate_edge_cbam` from the config `arch`, verifies the saved architecture, writes run metadata, records labeled VRAM metrics, and logs training exceptions to `train_error.txt`.
+- `trainer.py` implements `LiteDetectionTrainer`, `V1DetectionTrainer`, `GateDetectionTrainer`, `GateP2DetectionTrainer`, `GateP5DetectionTrainer`, and `GateEdgeCBAMTrainer`, which build and wrap variants inside Ultralytics `get_model` so wrappers survive trainer setup; it logs post-training validation/plot failures and falls back to live validation.
 - `subsets.py` derives per-condition/per-source lists from `manifest.csv`.
 - `evaluate.py` uses Ultralytics validation and saves subset metrics.
 - `error_analysis.py` matches predictions to GT and reports per-condition/source/class/size errors.

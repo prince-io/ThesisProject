@@ -36,10 +36,17 @@ class EdgeEnhance(nn.Module):
         input_dtype = x.dtype
         with torch.autocast(device_type=x.device.type, enabled=False):
             x = x.float()
-            gx = F.conv2d(x, self.sobel_x, padding=1, groups=self.channels)
-            gy = F.conv2d(x, self.sobel_y, padding=1, groups=self.channels)
+            gx = F.conv2d(
+                x, self.sobel_x.float(), padding=1, groups=self.channels
+            )
+            gy = F.conv2d(
+                x, self.sobel_y.float(), padding=1, groups=self.channels
+            )
             edge = torch.sqrt(gx.square() + gy.square() + self.eps)
-            x = x + self.gamma * self.proj(edge)
+            projected = F.conv2d(
+                edge, self.proj.weight.float(), self.proj.bias.float()
+            )
+            x = x + self.gamma.float() * projected
         return x.to(dtype=input_dtype)
 
 

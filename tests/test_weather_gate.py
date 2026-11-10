@@ -66,3 +66,12 @@ def test_build_gate_only_wraps_neck_layers() -> None:
     model = build_gate_only(weights).model
     for index in (15, 18, 21):
         assert isinstance(model.model[index], FeatureWithGate)
+
+
+def test_weather_gate_supports_half_inference() -> None:
+    gate = WeatherGate(16).eval().half()
+    x = torch.randn(1, 16, 8, 8, dtype=torch.float16)
+    with torch.no_grad():
+        y = gate(x)
+    assert y.dtype == torch.float16
+    assert torch.isfinite(y).all()

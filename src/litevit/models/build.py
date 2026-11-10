@@ -16,6 +16,7 @@ from litevit.models.gates import (
     GateWithSpatial,
     WeatherGate,
 )
+from litevit.models.p2 import add_p2_head
 
 P5_LAYER_INDEX = 9
 GATE_LAYER_INDICES = (15, 18, 21)
@@ -126,6 +127,21 @@ def build_gate_only(
     if model.model is None:
         raise RuntimeError("YOLO model has no detector attached")
     wrap_gate_only(model.model, reduction=reduction, scale=scale)
+    return model
+
+
+def wrap_gate_p2(detection: nn.Module) -> nn.Module:
+    """Add a P2 detection head and wrap P3/P4/P5 neck outputs with gates."""
+    add_p2_head(detection)
+    return wrap_gate_only(detection)
+
+
+def build_gate_p2(weights: str | Path = "yolov8n.pt") -> YOLO:
+    """Build gate-only plus a stride-4 P2 detection head."""
+    model = YOLO(str(weights))
+    if model.model is None:
+        raise RuntimeError("YOLO model has no detector attached")
+    wrap_gate_p2(model.model)
     return model
 
 

@@ -11,6 +11,7 @@ sources:
   - experiments/EXP-0004-weather-gate.md
   - experiments/EXP-0005-gate-p5.md
   - experiments/EXP-0006-gate-edge-cbam.md
+  - experiments/EXP-0007-gate-p2.md
   - results/baseline.md
   - results/ablation-comparison.md
   - findings/baseline-analysis.md
@@ -25,6 +26,8 @@ sources:
   - results/gate_p5.md
   - results/gate_p5-error-analysis.md
   - results/gate-p5-comparison.md
+  - results/gate_edge_cbam.md
+  - results/gate_edge_cbam-error-analysis.md
   - results/architecture-comparison.md
   - findings/weather-gate-analysis.md
   - findings/tta-analysis.md
@@ -36,9 +39,11 @@ sources:
   - methodology/weather-gate.md
   - methodology/gate-p5.md
   - methodology/gate-edge-cbam.md
+  - methodology/p2-head.md
   - decisions/ADR-0009-weather-gate-design.md
   - decisions/ADR-0010-gate-p5-design.md
   - decisions/ADR-0011-gate-edge-cbam-design.md
+  - decisions/ADR-0012-p2-head-design.md
 ---
 
 # Project Overview
@@ -118,7 +123,12 @@ TTA on gate-only was worse (test mAP50 0.5329 / mAP50-95 0.3280 vs 0.5444 / 0.33
 and doubled inference time; it is excluded (`results/weather-gate-tta.md`).
 
 The kitchen-sink model (gate + Sobel edge + spatial CBAM, 3.204 M parameters,
-8.895 GFLOPs) is implemented and pending training (`EXP-0006`). V2 (P4/P5 attention)
+8.895 GFLOPs) is complete (`EXP-0006`): test mAP50 0.5420 / mAP50-95 0.3295 vs
+gate-only 0.5444 / 0.3301. It is neutral overall and loses gate-only's night/rain
+gains. See `results/gate_edge_cbam.md`.
+
+The P2 model (gate-only + stride-4 detection head, 3.270 M parameters,
+13.3 GFLOPs) is implemented and pending training (`EXP-0007`). V2 (P4/P5 attention)
 is not implemented.
 
 ## Non-goals
@@ -127,7 +137,7 @@ is not implemented.
 
 ## Open questions
 
-- Kitchen-sink (edge + gate + spatial CBAM) training/evaluation — pending (`EXP-0006`).
-- Whether edge-only and CBAM-only ablations are needed — pending results.
-- Multi-seed validation of gate-only/kitchen sink — pending.
+- P2 (stride-4 head on gate-only) training/evaluation — pending (`EXP-0007`).
+- Whether P2 should be gated or followed by edge/CBAM if it helps — do not stack before P2 result.
+- Multi-seed validation of gate-only and P2 — pending.
 - Whether to reserve the test split for the final model after reuse — pending.

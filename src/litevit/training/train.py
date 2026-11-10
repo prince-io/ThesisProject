@@ -18,10 +18,12 @@ import yaml
 from ultralytics import YOLO
 
 from litevit.models.build import EDGE_LAYER_INDICES, GATE_LAYER_INDICES, P5_LAYER_INDEX
+from litevit.models.p2 import DETECT_LAYER_INDEX, P2_STRIDES
 from litevit.training.config import load_config, resolve_paths
 from litevit.training.trainer import (
     GateDetectionTrainer,
     GateEdgeCBAMTrainer,
+    GateP2DetectionTrainer,
     GateP5DetectionTrainer,
     V1DetectionTrainer,
 )
@@ -114,7 +116,7 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
     """Fail the run if the saved checkpoint does not contain the requested architecture."""
     if arch == "baseline":
         return True
-    if arch not in {"v1_p5", "gate_only", "gate_p5", "gate_edge_cbam"}:
+    if arch not in {"v1_p5", "gate_only", "gate_p2", "gate_p5", "gate_edge_cbam"}:
         raise ValueError(f"unsupported architecture: {arch}")
     checkpoint = save_dir / "weights/best.pt"
     if not checkpoint.exists():
@@ -150,6 +152,21 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
             f"{arch} checkpoint does not contain gates at P3/P4/P5; "
             "the architecture was discarded before training"
         )
+    if arch == "gate_p2":
+        if len(layers) != DETECT_LAYER_INDEX + 1:
+            raise RuntimeError(
+                f"P2 checkpoint has {len(layers)} layers, expected {DETECT_LAYER_INDEX + 1}"
+            )
+        if getattr(layers[-1], "nl", 0) != 4:
+            raise RuntimeError("P2 checkpoint does not contain a four-level Detect head")
+        strides = [float(value) for value in layers[-1].stride.tolist()]
+        if strides != [float(value) for value in P2_STRIDES]:
+            raise RuntimeError(f"P2 checkpoint strides are {strides}, expected {P2_STRIDES}")
+        if params < 3_200_000 or params > 3_350_000:
+            raise RuntimeError(
+                f"gate+P2 checkpoint has {params:,} parameters, outside the expected range"
+            )
+        return True
     if arch == "gate_p5":
         if not hasattr(layers[P5_LAYER_INDEX], "block"):
             raise RuntimeError(
@@ -245,6 +262,7 @@ def train(
     trainer_cls = {
         "v1_p5": V1DetectionTrainer,
         "gate_only": GateDetectionTrainer,
+        "gate_p2": GateP2DetectionTrainer,
         "gate_p5": GateP5DetectionTrainer,
         "gate_edge_cbam": GateEdgeCBAMTrainer,
     }.get(arch)
@@ -275,7 +293,14 @@ def train(
                 train_args["epochs"] = epochs
             if extra:
                 train_args.update(extra)
-            if arch not in {"baseline", "v1_p5", "gate_only", "gate_p5", "gate_edge_cbam"}:
+            if arch not in {
+                "baseline",
+                "v1_p5",
+                "gate_only",
+                "gate_p2",
+                "gate_p5",
+                "gate_edge_cbam",
+            }:
                 raise ValueError(f"unsupported architecture: {arch}")
             model = YOLO(str(config["model"]))
             for event in ("on_train_batch_end", "on_fit_epoch_end", "on_train_end"):

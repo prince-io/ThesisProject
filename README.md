@@ -21,8 +21,10 @@ adaptation (L-WG on P3/P4/P5, `EXP-0004`) is complete: test mAP50 0.5444 /
 mAP50-95 0.3301 vs baseline 0.5428 / 0.3287; validation is slightly lower but
 training is stable. A+B (gate + regularized P5 attention, `EXP-0005`) is complete: stable but neutral on
 test. TTA was worse and is excluded. Kitchen-sink (gate + Sobel edge + spatial
-CBAM, `EXP-0006`) is implemented; training/evaluation are pending. V2/V3 attention
-work has not started.
+CBAM, `EXP-0006`) is complete: test mAP50 0.5420 / mAP50-95 0.3295 vs gate-only
+0.5444 / 0.3301; neutral overall. P2 (gate-only + stride-4 detection head,
+`EXP-0007`) is implemented; training/evaluation are pending. V2/V3 attention work
+has not started.
 
 ## Code layout
 
@@ -308,6 +310,49 @@ No P5 attention. Total: 3,203,704 parameters and 8.895 GFLOPs. See
   --vram-report runs/train/gate_edge_cbam_seed42/vram.json \
   --title "Gate + Edge + CBAM Results" \
   --experiment-title "EXP-0006 — Gate + Sobel Edge + Spatial CBAM"
+```
+
+## P2 high-resolution head (EXP-0007)
+
+Gate-only plus a stride-4 P2/P3/P4/P5 detection head. P2 branch: upsample P3,
+concatenate backbone P2, C2f to 32 channels. No attention, edge, CBAM, or TTA.
+Total: 3,270,388 parameters and 13.3 GFLOPs. See
+`thesis/methodology/p2-head.md` and
+`thesis/experiments/EXP-0007-gate-p2.md`.
+
+```bash
+# Optional 5-epoch smoke run
+.venv/bin/python scripts/train.py \
+  --config configs/train/gate_p2.yaml \
+  --name gate_p2_smoke --epochs 5
+
+# Full P2 run
+.venv/bin/python scripts/train.py \
+  --config configs/train/gate_p2.yaml \
+  --name gate_p2_seed42
+
+.venv/bin/python scripts/evaluate.py \
+  --weights runs/train/gate_p2_seed42/weights/best.pt \
+  --data configs/datasets/adverse16k.yaml \
+  --splits val test \
+  --out runs/eval/gate_p2_seed42 \
+  --subsets data/processed/adverse16k/subsets \
+  --figures-dir thesis/results/figures/gate_p2
+
+.venv/bin/python scripts/error_analysis.py \
+  --weights runs/train/gate_p2_seed42/weights/best.pt \
+  --out runs/eval/gate_p2_seed42/error_analysis \
+  --splits val test
+
+.venv/bin/python scripts/document_results.py \
+  --train-run runs/train/gate_p2_seed42 \
+  --eval-run runs/eval/gate_p2_seed42 \
+  --results thesis/results/gate_p2.md \
+  --experiment thesis/experiments/EXP-0007-gate-p2.md \
+  --figures-dir thesis/results/figures/gate_p2 \
+  --vram-report runs/train/gate_p2_seed42/vram.json \
+  --title "Gate + P2 Head Results" \
+  --experiment-title "EXP-0007 — Gate-Only + P2 High-Resolution Head"
 ```
 
 ## Conventions

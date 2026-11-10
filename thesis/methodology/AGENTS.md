@@ -21,6 +21,7 @@ Hold the validated approach: architecture, training strategy, and design rationa
 - `weather-gate.md` records the gate-only design, values, and parameter budget.
 - `gate-p5.md` records A+B: gate plus regularized P5 attention.
 - `gate-edge-cbam.md` records the gate + Sobel edge + spatial CBAM model.
+- `p2-head.md` records the gate-only + stride-4 P2 detection head design.
 - Add V2 (P4/P5 attention) methodology as implementation proceeds.
 
 ## Verification

@@ -7,8 +7,15 @@ import traceback
 from ultralytics.models.yolo.detect import DetectionTrainer
 from ultralytics.utils import LOGGER
 
-from litevit.models import wrap_gate_edge_cbam, wrap_gate_only, wrap_gate_p5, wrap_v1_p5
+from litevit.models import (
+    wrap_gate_edge_cbam,
+    wrap_gate_only,
+    wrap_gate_p2,
+    wrap_gate_p5,
+    wrap_v1_p5,
+)
 from litevit.models.build import EDGE_LAYER_INDICES, GATE_LAYER_INDICES, P5_LAYER_INDEX
+from litevit.models.p2 import DETECT_LAYER_INDEX
 
 
 class LiteDetectionTrainer(DetectionTrainer):
@@ -78,6 +85,20 @@ class GateDetectionTrainer(LiteDetectionTrainer):
 
     def _wrap_model(self, model):
         return wrap_gate_only(model)
+
+
+class GateP2DetectionTrainer(LiteDetectionTrainer):
+    """Build P3/P4/P5 weather gates plus a stride-4 P2 detection head."""
+
+    def _is_wrapped(self, model) -> bool:
+        return (
+            len(model.model) == DETECT_LAYER_INDEX + 1
+            and getattr(model.model[DETECT_LAYER_INDEX], "nl", 0) == 4
+            and all(hasattr(model.model[i], "gate") for i in GATE_LAYER_INDICES)
+        )
+
+    def _wrap_model(self, model):
+        return wrap_gate_p2(model)
 
 
 class GateP5DetectionTrainer(LiteDetectionTrainer):

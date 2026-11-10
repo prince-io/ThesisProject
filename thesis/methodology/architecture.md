@@ -10,6 +10,8 @@ sources:
   - configs/train/litevit_v1_p5.yaml
   - src/litevit/models/blocks.py
   - src/litevit/models/build.py
+  - src/litevit/models/p2.py
+  - thesis/methodology/p2-head.md
 ---
 
 # Architecture — V1 P5 LiteViT
@@ -138,7 +140,9 @@ expected mAP gain are hypotheses. See
   `weather-gate.md`.
 - A+B (gate + regularized P5 attention) is complete as `EXP-0005`; see
   `gate-p5.md`.
-- Kitchen sink (gate + Sobel edge + spatial CBAM) is implemented as `EXP-0006`;
+- Kitchen sink (gate + Sobel edge + spatial CBAM) is complete as `EXP-0006`;
   see `gate-edge-cbam.md`.
+- P2 (gate-only plus a stride-4 detection head) is implemented as `EXP-0007`;
+  see `p2-head.md`.
 
 V2 (P4 attention) is not implemented yet.

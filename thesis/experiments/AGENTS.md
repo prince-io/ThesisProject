@@ -24,6 +24,7 @@ Hold curated records of dataset preparation and experiments: what was built/run 
 - `EXP-0004-weather-gate.md` records the gate-only weather-adaptation experiment.
 - `EXP-0005-gate-p5.md` records A+B: gate plus regularized P5 attention.
 - `EXP-0006-gate-edge-cbam.md` records the gate + Sobel edge + spatial CBAM model.
+- `EXP-0007-gate-p2.md` records gate-only plus a stride-4 P2 detection head.
 - `README.md` is the experiment registry; update it when a run is added or completes.
 
 ## Verification

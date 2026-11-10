@@ -109,3 +109,16 @@ def test_build_gate_edge_cbam_starts_as_baseline() -> None:
         y_base = baseline(x)
         y_combined = combined(x)
     _assert_same_output(y_base, y_combined)
+
+
+def test_edge_and_spatial_attention_support_half_inference() -> None:
+    edge = EdgeEnhance(16).eval().half()
+    spatial = SpatialAttention().eval().half()
+    x = torch.randn(1, 16, 8, 8, dtype=torch.float16)
+    with torch.no_grad():
+        y_edge = edge(x)
+        y_spatial = spatial(x)
+    assert y_edge.dtype == torch.float16
+    assert y_spatial.dtype == torch.float16
+    assert torch.isfinite(y_edge).all()
+    assert torch.isfinite(y_spatial).all()

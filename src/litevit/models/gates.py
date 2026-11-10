@@ -37,7 +37,14 @@ class WeatherGate(nn.Module):
         with torch.autocast(device_type=x.device.type, enabled=False):
             x = x.float()
             pooled = F.adaptive_avg_pool2d(x, 1)
-            weight = self.scale * torch.sigmoid(self.fc2(self.act(self.fc1(pooled))))
+            hidden = F.conv2d(
+                pooled, self.fc1.weight.float(), self.fc1.bias.float()
+            )
+            hidden = F.silu(hidden)
+            weight = F.conv2d(
+                hidden, self.fc2.weight.float(), self.fc2.bias.float()
+            )
+            weight = self.scale * torch.sigmoid(weight)
             x = x * weight
         return x.to(dtype=input_dtype)
 
@@ -77,7 +84,14 @@ class SpatialAttention(nn.Module):
             x = x.float()
             avg = x.mean(dim=1, keepdim=True)
             max_value = x.max(dim=1, keepdim=True).values
-            weight = 2.0 * torch.sigmoid(self.conv(torch.cat([avg, max_value], dim=1)))
+            pooled = torch.cat([avg, max_value], dim=1)
+            weight = F.conv2d(
+                pooled,
+                self.conv.weight.float(),
+                self.conv.bias.float(),
+                padding=self.conv.padding,
+            )
+            weight = 2.0 * torch.sigmoid(weight)
             x = x * weight
         return x.to(dtype=input_dtype)
 
