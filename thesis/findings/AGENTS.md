@@ -22,6 +22,8 @@ Interpret results and record lessons, conclusions, and implications for the thes
 - `v1-invalid-run.md` diagnoses the discarded-wrapper V1 run and records the lesson.
 - `v1-p5-analysis.md` interprets the completed V1 P5 experiment as a negative result.
 - `weather-gate-analysis.md` interprets the gate-only result and the next A+B step.
+- `gate-p5-analysis.md` interprets A+B as a neutral/negative attention ablation.
+- `tta-analysis.md` records the negative TTA check.
 - Keep interpretation separate from the facts in `../results/` and cite them.
 
 ## Verification

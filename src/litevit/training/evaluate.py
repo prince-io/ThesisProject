@@ -103,6 +103,7 @@ def evaluate(
     imgsz: int = 640,
     batch: int = 4,
     device: int | str = 0,
+    augment: bool = False,
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     model = YOLO(str(weights))
@@ -112,6 +113,7 @@ def evaluate(
         "weights": str(weights),
         "data": str(data),
         "splits": list(splits),
+        "augment": augment,
         "overall": {},
         "per_condition": {},
         "per_source": {},
@@ -125,6 +127,7 @@ def evaluate(
             batch=batch,
             device=device,
             plots=True,
+            augment=augment,
             project=str(out_dir.resolve()),
             name=f"overall_{split}",
             exist_ok=True,
@@ -147,6 +150,7 @@ def evaluate(
                 batch=batch,
                 device=device,
                 plots=True,
+                augment=augment,
                 project=str(out_dir.resolve()),
                 name=f"{split}_{name}",
                 exist_ok=True,
@@ -206,6 +210,7 @@ def main() -> None:
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--batch", type=int, default=4)
     parser.add_argument("--device", default=0)
+    parser.add_argument("--augment", action="store_true")
     args = parser.parse_args()
     payload = evaluate(
         weights=args.weights,
@@ -217,6 +222,7 @@ def main() -> None:
         imgsz=args.imgsz,
         batch=args.batch,
         device=args.device,
+        augment=args.augment,
     )
     print(json.dumps(payload, indent=2))
 

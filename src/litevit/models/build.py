@@ -8,10 +8,18 @@ from torch import nn
 from ultralytics import YOLO
 
 from litevit.models.blocks import FeatureWithBlock, LiteViTBlock
-from litevit.models.gates import GATE_REDUCTION, GATE_SCALE, FeatureWithGate, WeatherGate
+from litevit.models.edge import EdgeEnhance, FeatureWithEdge
+from litevit.models.gates import (
+    GATE_REDUCTION,
+    GATE_SCALE,
+    FeatureWithGate,
+    GateWithSpatial,
+    WeatherGate,
+)
 
 P5_LAYER_INDEX = 9
 GATE_LAYER_INDICES = (15, 18, 21)
+EDGE_LAYER_INDICES = (4, 6)
 GATE_P5_HEADS = 4
 GATE_P5_MLP_RATIO = 1.0
 GATE_P5_DROP_PATH = 0.2
@@ -157,4 +165,54 @@ def build_gate_p5(
         drop_path=drop_path,
         dropout=dropout,
     )
+    return model
+
+
+def wrap_edge(detection: nn.Module) -> nn.Module:
+    """Wrap backbone P3/P4 outputs with the Sobel edge residual."""
+    layers = getattr(detection, "model", None)
+    if layers is None:
+        raise RuntimeError("detection model has no layer sequence")
+    for index in EDGE_LAYER_INDICES:
+        if not 0 <= index < len(layers):
+            raise IndexError(
+                f"layer index {index} outside model with {len(layers)} layers"
+            )
+        base = layers[index]
+        if isinstance(base, FeatureWithEdge):
+            continue
+        layers[index] = FeatureWithEdge(base, EdgeEnhance(_infer_out_channels(base)))
+    return detection
+
+
+def wrap_gate_spatial(detection: nn.Module) -> nn.Module:
+    """Wrap neck P3/P4/P5 outputs with channel gate plus spatial attention."""
+    layers = getattr(detection, "model", None)
+    if layers is None:
+        raise RuntimeError("detection model has no layer sequence")
+    for index in GATE_LAYER_INDICES:
+        if not 0 <= index < len(layers):
+            raise IndexError(
+                f"layer index {index} outside model with {len(layers)} layers"
+            )
+        base = layers[index]
+        if isinstance(base, FeatureWithGate):
+            continue
+        layers[index] = FeatureWithGate(
+            base, GateWithSpatial(_infer_out_channels(base))
+        )
+    return detection
+
+
+def wrap_gate_edge_cbam(detection: nn.Module) -> nn.Module:
+    """Wrap edge enhancement plus channel/spatial weather attention."""
+    return wrap_gate_spatial(wrap_edge(detection))
+
+
+def build_gate_edge_cbam(weights: str | Path = "yolov8n.pt") -> YOLO:
+    """Build the kitchen-sink model: edge + channel gate + spatial CBAM."""
+    model = YOLO(str(weights))
+    if model.model is None:
+        raise RuntimeError("YOLO model has no detector attached")
+    wrap_gate_edge_cbam(model.model)
     return model

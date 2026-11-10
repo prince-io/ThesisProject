@@ -14,7 +14,8 @@
 - Architecture literature grounding is complete: verified citations in `thesis/bibliography/references.bib`, synthesis in `thesis/related-work/`, and an evidence-vs-assumption map in `thesis/related-work/architecture-grounding.md`.
 - V1 (P5-only LiteViT) is complete (`EXP-0003`): it early-stopped at epoch 38, best epoch 18, and underperformed the baseline on test.
 - Gate-only weather adaptation (L-WG on P3/P4/P5, `EXP-0004`) is complete: test mAP50 0.5444 / mAP50-95 0.3301 vs baseline 0.5428 / 0.3287; validation is slightly lower but training is stable.
-- A+B (gate + regularized P5 attention, `EXP-0005`) is implemented; training/evaluation are pending. V2 (P4/P5 attention) has not started.
+- A+B (gate + regularized P5 attention, `EXP-0005`) is complete: stable but neutral on test (mAP50 0.5387 / mAP50-95 0.3290 vs baseline 0.5428 / 0.3287 and gate-only 0.5444 / 0.3301). TTA was worse and is excluded.
+- Kitchen-sink (gate + Sobel edge + spatial CBAM, `EXP-0006`) is implemented; training/evaluation are pending. V2 (P4/P5 attention) has not started.
 
 ## Core Contract
 
@@ -131,6 +132,10 @@ Default section order:
 - A+B evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/gate_p5_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/gate_p5_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/gate_p5`.
 - A+B error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/gate_p5_seed42/weights/best.pt --out runs/eval/gate_p5_seed42/error_analysis --splits val test`.
 - A+B document: `.venv/bin/python scripts/document_results.py --train-run runs/train/gate_p5_seed42 --eval-run runs/eval/gate_p5_seed42 --results thesis/results/gate_p5.md --experiment thesis/experiments/EXP-0005-gate-p5.md --figures-dir thesis/results/figures/gate_p5 --vram-report runs/train/gate_p5_seed42/vram.json --title "A+B Results — Gate + Regularized P5 Attention" --experiment-title "EXP-0005 — Gate + Regularized P5 Attention"`.
+- Kitchen-sink train: `.venv/bin/python scripts/train.py --config configs/train/gate_edge_cbam.yaml --name gate_edge_cbam_seed42`.
+- Kitchen-sink evaluate: `.venv/bin/python scripts/evaluate.py --weights runs/train/gate_edge_cbam_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/gate_edge_cbam_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/gate_edge_cbam`.
+- Kitchen-sink error analysis: `.venv/bin/python scripts/error_analysis.py --weights runs/train/gate_edge_cbam_seed42/weights/best.pt --out runs/eval/gate_edge_cbam_seed42/error_analysis --splits val test`.
+- Kitchen-sink document: `.venv/bin/python scripts/document_results.py --train-run runs/train/gate_edge_cbam_seed42 --eval-run runs/eval/gate_edge_cbam_seed42 --results thesis/results/gate_edge_cbam.md --experiment thesis/experiments/EXP-0006-gate-edge-cbam.md --figures-dir thesis/results/figures/gate_edge_cbam --vram-report runs/train/gate_edge_cbam_seed42/vram.json --title "Gate + Edge + CBAM Results" --experiment-title "EXP-0006 — Gate + Sobel Edge + Spatial CBAM"`.
 - `data/` holds datasets and `runs/` holds full run artifacts; both are gitignored.
 
 ## Child DOX Index

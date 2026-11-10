@@ -23,11 +23,11 @@ pretrained Ultralytics YOLO models.
 
 - `blocks.py` — LayerNorm2d, linear attention, ConvFFN, LiteViTBlock,
   FeatureWithBlock.
-- `gates.py` — WeatherGate and FeatureWithGate (P3/P4/P5 channel gating).
-- `build.py` — `wrap_v1_p5`/`build_v1_p5` (P5 layer 9),
-  `wrap_gate_only`/`build_gate_only` (P3/P4/P5 layers 15/18/21), and
-  `wrap_gate_p5`/`build_gate_p5` for A+B.
-- V2 (P4 attention) is not implemented yet; V1, gate-only, and A+B are implemented.
+- `gates.py` — WeatherGate, SpatialAttention, GateWithSpatial, FeatureWithGate.
+- `edge.py` — fixed Sobel EdgeEnhance and FeatureWithEdge (P3/P4).
+- `build.py` — V1, gate-only, A+B, and kitchen-sink builders
+  (`wrap_gate_edge_cbam`/`build_gate_edge_cbam`).
+- V2 (P4 attention) is not implemented yet; V1, gate-only, A+B, and kitchen sink are implemented.
 - Add tests in `tests/test_litevit_models.py` for shape, identity, parameter budget,
   and integration.
 

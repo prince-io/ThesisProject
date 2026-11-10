@@ -106,5 +106,10 @@ isolates the weather gate (`arch: gate_only`) on P3/P4/P5 with C/4, SiLU,
 The run record is `thesis/experiments/EXP-0004-weather-gate.md`; the result is a small test gain with slightly lower validation, documented in `thesis/findings/weather-gate-analysis.md`.
 
 A+B combines that gate with a regularized P5 block (DropPath 0.2, dropout 0.1,
-MLP ratio 1.0). It is implemented and pending `EXP-0005`; see
-`thesis/methodology/gate-p5.md` and `thesis/decisions/ADR-0010-gate-p5-design.md`.
+MLP ratio 1.0). It is complete and neutral on test (`EXP-0005`); see
+`thesis/results/gate_p5.md` and `thesis/findings/gate-p5-analysis.md`.
+
+The kitchen-sink model adds Sobel edge residuals at P3/P4 and spatial CBAM
+(`EXP-0006`); see `thesis/methodology/gate-edge-cbam.md` and
+`thesis/decisions/ADR-0011-gate-edge-cbam-design.md`. TTA was tested and rejected
+because it reduced accuracy.`

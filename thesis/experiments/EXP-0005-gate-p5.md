@@ -1,105 +1,108 @@
 ---
-title: EXP-0005 — Gate + Regularized P5 Attention (A+B)
-status: draft
+title: EXP-0005 — Gate + Regularized P5 Attention
+status: validated
 date: 2026-11-10
 sources:
-  - configs/train/gate_p5.yaml
-  - thesis/methodology/gate-p5.md
-  - thesis/decisions/ADR-0010-gate-p5-design.md
+  - runs/train/gate_p5_seed42
+  - runs/eval/gate_p5_seed42
 ---
 
-# EXP-0005 — Gate + Regularized P5 Attention (A+B)
+# EXP-0005 — Gate + Regularized P5 Attention
 
 ## Objective
 
-Test whether regularized, lower-capacity P5 attention adds value on top of the
-P3/P4/P5 weather gate. V1 attention alone overfit; gate-only was stable but only
-slightly positive.
+Record the detector run and its measured outcomes on `adverse16k`.
 
-## Scope
-
-- YOLOv8n backbone, neck, and head unchanged.
-- Regularized LiteViT block after SPPF/P5 (layer 9):
-  - 4 heads;
-  - MLP ratio 1.0;
-  - DropPath 0.2;
-  - dropout 0.1;
-  - zero-initialized LayerScale;
-  - FP32 block execution under AMP.
-- Weather gate on P3/P4/P5 after the neck (layers 15/18/21):
-  - C/4 reduction, SiLU, `2·sigmoid`, zero-initialized final layer.
-- Same protocol as `EXP-0001`.
-
-## Size
-
-| Component | Parameters |
-|---|---:|
-| YOLOv8n 5-class baseline | 3,138,975 |
-| Regularized P5 block | 401,408 |
-| P3/P4/P5 gates | 43,568 |
-| **Total** | **3,583,951** |
-
-GFLOPs at 640: **9.099**.
-
-## Setup
+## Environment
 
 | Item | Value |
 |---|---|
-| Config | `configs/train/gate_p5.yaml` |
-| Architecture | `arch: gate_p5` |
-| Pretrained weights | `yolov8n.pt` |
-| Dataset | `adverse16k` |
-| Seed | 42 |
-| Hardware | RTX 3050 6 GB |
-| Train run | `runs/train/gate_p5_seed42` |
-| Eval run | `runs/eval/gate_p5_seed42` |
+| Python | 3.12.3 |
+| PyTorch | 2.14.1+cu130 |
+| Ultralytics | 8.4.204 |
+| CUDA | 13.0 |
+| GPU | NVIDIA GeForce RTX 3050 6GB Laptop GPU |
+| GPU memory | 5806.3 MB |
+| Git commit | `1d5ab73cbca15fb42f973ec872f039ce5fbdbc9b` |
+
+## Configuration
+
+| Key | Value |
+|---|---|
+| `amp` | `True` |
+| `arch` | `gate_p5` |
+| `batch` | `4` |
+| `cache` | `False` |
+| `close_mosaic` | `10` |
+| `cls_pw` | `0.5` |
+| `cls_remap` | `True` |
+| `cos_lr` | `True` |
+| `data` | `/home/ps/Desktop/thesis_project/configs/datasets/adverse16k.yaml` |
+| `deterministic` | `True` |
+| `device` | `0` |
+| `epochs` | `100` |
+| `exist_ok` | `False` |
+| `imgsz` | `640` |
+| `lr0` | `0.0002` |
+| `lrf` | `0.01` |
+| `mixup` | `0.05` |
+| `model` | `/home/ps/Desktop/thesis_project/yolov8n.pt` |
+| `mosaic` | `0.5` |
+| `name` | `gate_p5_seed42` |
+| `nbs` | `8` |
+| `optimizer` | `AdamW` |
+| `patience` | `20` |
+| `plots` | `True` |
+| `pretrained` | `True` |
+| `project` | `/home/ps/Desktop/thesis_project/runs/train` |
+| `seed` | `42` |
+| `val` | `True` |
+| `warmup_epochs` | `3.0` |
+| `weight_decay` | `0.0005` |
+| `workers` | `4` |
 
 ## Commands
 
 ```bash
-# Optional 5-epoch smoke run
-.venv/bin/python scripts/train.py \
-  --config configs/train/gate_p5.yaml \
-  --name gate_p5_smoke --epochs 5
-
-# Full A+B run
-.venv/bin/python scripts/train.py \
-  --config configs/train/gate_p5.yaml \
-  --name gate_p5_seed42
-
-.venv/bin/python scripts/evaluate.py \
-  --weights runs/train/gate_p5_seed42/weights/best.pt \
-  --data configs/datasets/adverse16k.yaml \
-  --splits val test \
-  --out runs/eval/gate_p5_seed42 \
-  --subsets data/processed/adverse16k/subsets \
-  --figures-dir thesis/results/figures/gate_p5
-
-.venv/bin/python scripts/error_analysis.py \
-  --weights runs/train/gate_p5_seed42/weights/best.pt \
-  --out runs/eval/gate_p5_seed42/error_analysis \
-  --splits val test
-
-.venv/bin/python scripts/document_results.py \
-  --train-run runs/train/gate_p5_seed42 \
-  --eval-run runs/eval/gate_p5_seed42 \
-  --results thesis/results/gate_p5.md \
-  --experiment thesis/experiments/EXP-0005-gate-p5.md \
-  --figures-dir thesis/results/figures/gate_p5 \
-  --vram-report runs/train/gate_p5_seed42/vram.json \
-  --title "A+B Results — Gate + Regularized P5 Attention" \
-  --experiment-title "EXP-0005 — Gate + Regularized P5 Attention"
+.venv/bin/python scripts/train.py --config configs/train/gate_p5.yaml --name gate_p5_seed42
+.venv/bin/python scripts/evaluate.py --weights runs/train/gate_p5_seed42/weights/best.pt --data configs/datasets/adverse16k.yaml --splits val test --out runs/eval/gate_p5_seed42 --subsets data/processed/adverse16k/subsets --figures-dir thesis/results/figures/gate_p5
+.venv/bin/python scripts/error_analysis.py --weights runs/train/gate_p5_seed42/weights/best.pt --out runs/eval/gate_p5_seed42/error_analysis --splits val test
+.venv/bin/python scripts/document_results.py --train-run runs/train/gate_p5_seed42 --eval-run runs/eval/gate_p5_seed42 --results thesis/results/gate_p5.md --experiment thesis/experiments/EXP-0005-gate-p5.md --figures-dir thesis/results/figures/gate_p5 --vram-report runs/train/gate_p5_seed42/vram.json --title "A+B Results — Gate + Regularized P5 Attention" --experiment-title "EXP-0005 — Gate + Regularized P5 Attention"
 ```
 
-## Hypothesis and checks
+## Dataset
 
-- Initial output should match the baseline exactly.
-- Saved `best.pt` must contain `FeatureWithBlock` at layer 9 and
-  `FeatureWithGate` at 15/18/21, with about **3.584 M** parameters.
-- Compare against baseline, V1, and gate-only per condition/class/size.
-- If A+B does not beat gate-only and baseline on validation, keep gate-only and
-  report P5 attention as a negative ablation.
+- Dataset config: `/home/ps/Desktop/thesis_project/configs/datasets/adverse16k.yaml`
+- Checksums: `/home/ps/Desktop/thesis_project/data/processed/adverse16k/checksums.sha1`
+- Checksums SHA-1: `7de437da75a1698d73195565cfff0c2b3e83da48`
 
-## Status
+## VRAM
 
-Planned. Training and evaluation are pending.
+| Measurement | Value |
+|---|---:|
+| Training PyTorch peak allocated | 776.0 MB |
+| Training PyTorch peak reserved | 1328.0 MB |
+| Training GPU used peak (nvidia-smi) | 1535.0 MB |
+| Training GPU used baseline | 15.0 MB |
+| Training GPU used peak delta | 1520.0 MB |
+| Inference PyTorch peak allocated | 205.4 MB |
+
+_GPU-used and reserved values were recorded during the full training run._
+
+## Results
+
+See the sibling results document for the full tables.
+
+- Val mAP50 / mAP50-95: 0.4865 / 0.2938
+- Test mAP50 / mAP50-95: 0.5387 / 0.3290
+
+## Error Analysis
+
+- Raw artifacts: `runs/eval/gate_p5_seed42/error_analysis/`
+- Curated facts: `thesis/results/gate_p5-error-analysis.md`
+
+## Artifacts
+
+- Training: `runs/train/gate_p5_seed42`
+- Evaluation: `runs/eval/gate_p5_seed42`
+- Figures: `thesis/results/figures/gate_p5/`

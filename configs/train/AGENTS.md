@@ -22,6 +22,7 @@ Hold training configurations for baseline and proposed models.
 - `litevit_v1_p5.yaml` is the V1 P5-only LiteViT run (`arch: v1_p5`); all other settings match the baseline.
 - `weather_gate.yaml` is the gate-only run (`arch: gate_only`); all other settings match the baseline.
 - `gate_p5.yaml` is A+B: gate plus regularized P5 attention (`arch: gate_p5`); all other settings match the baseline.
+- `gate_edge_cbam.yaml` is the kitchen-sink model (`arch: gate_edge_cbam`); all other settings match the baseline.
 - Start new variants from the baseline config and change one factor at a time.
 
 ## Verification

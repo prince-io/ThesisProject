@@ -136,7 +136,9 @@ expected mAP gain are hypotheses. See
 - V3: combine P4/P5 attention with the Lightweight Weather Gate (L-WG).
 - Gate-only (L-WG on P3/P4/P5) is implemented separately as `EXP-0004`; see
   `weather-gate.md`.
-- A+B (gate + regularized P5 attention) is implemented as `EXP-0005`; see
+- A+B (gate + regularized P5 attention) is complete as `EXP-0005`; see
   `gate-p5.md`.
+- Kitchen sink (gate + Sobel edge + spatial CBAM) is implemented as `EXP-0006`;
+  see `gate-edge-cbam.md`.
 
 V2 (P4 attention) is not implemented yet.

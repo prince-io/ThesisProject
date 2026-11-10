@@ -24,7 +24,9 @@ Hold measured outcomes as facts: metrics, tables, and comparisons tied to a run 
 - The invalid V1 predecessor has no curated results doc; it is documented in `../findings/v1-invalid-run.md`.
 - Gate-only facts: `weather_gate.md` and `weather_gate-error-analysis.md`.
 - Cross-variant facts: `architecture-comparison.md`.
-- A+B results will be generated to `gate_p5.md` when `EXP-0005` completes.
+- A+B facts: `gate_p5.md`, `gate_p5-error-analysis.md`, and `gate-p5-comparison.md` (EXP-0005).
+- Kitchen-sink results will be generated to `gate_edge_cbam.md` when `EXP-0006` completes.
+- TTA facts: `weather-gate-tta.md`.
 - Raw error-analysis data stays in `runs/eval/<run>/error_analysis/`.
 - Curated figures live in `thesis/results/figures/`; full plots stay in `runs/`.
 - VRAM values must be labeled as training-PyTorch, training-GPU-used, or inference.

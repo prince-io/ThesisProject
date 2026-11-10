@@ -21,6 +21,7 @@ Hold YAML configs for datasets, models, training, and evaluation.
 - `train/litevit_v1_p5.yaml` defines the V1 P5-only LiteViT run (`arch: v1_p5`).
 - `train/weather_gate.yaml` defines the gate-only run (`arch: gate_only`).
 - `train/gate_p5.yaml` defines A+B: gate plus regularized P5 attention (`arch: gate_p5`).
+- `train/gate_edge_cbam.yaml` defines the gate + Sobel edge + spatial CBAM model.
 
 ## Verification
 

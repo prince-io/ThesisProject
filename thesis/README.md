@@ -34,7 +34,9 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - The design-choice → evidence → assumption map is in `related-work/architecture-grounding.md`.
 - V1 (P5-only LiteViT) is implemented and evaluated (`EXP-0003`); it early-stopped at epoch 38 and underperformed the baseline on test.
 - Gate-only weather adaptation is complete (`EXP-0004`): test mAP50 0.5444 / mAP50-95 0.3301 vs baseline 0.5428 / 0.3287; validation is slightly lower but training is stable.
-- A+B (gate + regularized P5 attention) is implemented; training/evaluation are pending (`EXP-0005`).
+- A+B (gate + regularized P5 attention) is complete (`EXP-0005`); stable but neutral on test.
+- TTA on gate-only was worse and is excluded.
+- Kitchen-sink (gate + Sobel edge + spatial CBAM, `EXP-0006`) is implemented; training/evaluation are pending.
 - V2 (P4/P5 attention) has not started.
 
 ## Field map

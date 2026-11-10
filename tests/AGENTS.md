@@ -22,6 +22,7 @@ Hold automated verification for the `litevit` package.
 - LiteViT block shape/identity, parameter budget, wrapper metadata, and V1 integration are covered in `test_litevit_models.py`.
 - Weather gate identity, parameter budget, wrapper metadata, and gate-only integration are covered in `test_weather_gate.py`.
 - A+B combined block/gate construction, identity, and parameter budget are covered in `test_gate_p5.py`.
+- Sobel edge, spatial CBAM, gate+edge+CBAM identity, and parameter budget are covered in `test_gate_edge_cbam.py`.
 
 ## Verification
 

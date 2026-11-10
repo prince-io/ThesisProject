@@ -17,10 +17,11 @@ import ultralytics
 import yaml
 from ultralytics import YOLO
 
-from litevit.models.build import GATE_LAYER_INDICES, P5_LAYER_INDEX
+from litevit.models.build import EDGE_LAYER_INDICES, GATE_LAYER_INDICES, P5_LAYER_INDEX
 from litevit.training.config import load_config, resolve_paths
 from litevit.training.trainer import (
     GateDetectionTrainer,
+    GateEdgeCBAMTrainer,
     GateP5DetectionTrainer,
     V1DetectionTrainer,
 )
@@ -113,7 +114,7 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
     """Fail the run if the saved checkpoint does not contain the requested architecture."""
     if arch == "baseline":
         return True
-    if arch not in {"v1_p5", "gate_only", "gate_p5"}:
+    if arch not in {"v1_p5", "gate_only", "gate_p5", "gate_edge_cbam"}:
         raise ValueError(f"unsupported architecture: {arch}")
     checkpoint = save_dir / "weights/best.pt"
     if not checkpoint.exists():
@@ -163,6 +164,16 @@ def verify_saved_architecture(save_dir: Path, arch: str) -> bool:
         if params < 3_500_000 or params > 3_700_000:
             raise RuntimeError(
                 f"A+B checkpoint has {params:,} parameters, outside the expected range"
+            )
+        return True
+    if arch == "gate_edge_cbam":
+        if not all(hasattr(layers[i], "edge") for i in EDGE_LAYER_INDICES):
+            raise RuntimeError(
+                "gate+edge+CBAM checkpoint does not contain edge branches at P3/P4"
+            )
+        if params < 3_150_000 or params > 3_300_000:
+            raise RuntimeError(
+                f"gate+edge+CBAM checkpoint has {params:,} parameters, outside the expected range"
             )
         return True
     if params < 3_150_000 or params > 3_250_000:
@@ -235,6 +246,7 @@ def train(
         "v1_p5": V1DetectionTrainer,
         "gate_only": GateDetectionTrainer,
         "gate_p5": GateP5DetectionTrainer,
+        "gate_edge_cbam": GateEdgeCBAMTrainer,
     }.get(arch)
     tracker = _VramTracker()
     baseline_used = _gpu_used_mb()
@@ -263,7 +275,7 @@ def train(
                 train_args["epochs"] = epochs
             if extra:
                 train_args.update(extra)
-            if arch not in {"baseline", "v1_p5", "gate_only", "gate_p5"}:
+            if arch not in {"baseline", "v1_p5", "gate_only", "gate_p5", "gate_edge_cbam"}:
                 raise ValueError(f"unsupported architecture: {arch}")
             model = YOLO(str(config["model"]))
             for event in ("on_train_batch_end", "on_fit_epoch_end", "on_train_end"):

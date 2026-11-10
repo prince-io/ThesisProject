@@ -20,9 +20,10 @@ Hold the `litevit` Python package: backbone/neck/head modules, weather gating, d
 ## Work Guidance
 
 - Dataset preparation and the training/evaluation harness are implemented.
-- V1 (P5 attention), gate-only (P3/P4/P5 weather gates), and A+B (gate plus
-  regularized P5 attention) are implemented in `litevit/models/` and built inside
-  `litevit/training/trainer.py`; V2 (P4 attention) is not implemented yet.
+- V1 (P5 attention), gate-only, A+B (gate + regularized P5 attention), and the
+  kitchen-sink model (gate + Sobel edge + spatial CBAM) are implemented in
+  `litevit/models/` and built inside `litevit/training/trainer.py`; V2 (P4 attention)
+  is not implemented yet.
 - Add modules one concern at a time.
 - Add a test in `tests/` for each new public behavior.
 

@@ -56,3 +56,45 @@ class FeatureWithGate(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.gate(self.base(x))
+
+
+class SpatialAttention(nn.Module):
+    """CBAM-style spatial attention with identity initialization."""
+
+    def __init__(self, kernel_size: int = 7) -> None:
+        super().__init__()
+        if kernel_size % 2 == 0:
+            raise ValueError("kernel_size must be odd")
+        self.conv = nn.Conv2d(
+            2, 1, kernel_size=kernel_size, padding=kernel_size // 2, bias=True
+        )
+        nn.init.zeros_(self.conv.weight)
+        nn.init.zeros_(self.conv.bias)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        input_dtype = x.dtype
+        with torch.autocast(device_type=x.device.type, enabled=False):
+            x = x.float()
+            avg = x.mean(dim=1, keepdim=True)
+            max_value = x.max(dim=1, keepdim=True).values
+            weight = 2.0 * torch.sigmoid(self.conv(torch.cat([avg, max_value], dim=1)))
+            x = x * weight
+        return x.to(dtype=input_dtype)
+
+
+class GateWithSpatial(nn.Module):
+    """Channel weather gate followed by spatial attention."""
+
+    def __init__(
+        self,
+        channels: int,
+        reduction: int = GATE_REDUCTION,
+        scale: float = GATE_SCALE,
+        kernel_size: int = 7,
+    ) -> None:
+        super().__init__()
+        self.channel = WeatherGate(channels, reduction=reduction, scale=scale)
+        self.spatial = SpatialAttention(kernel_size=kernel_size)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.spatial(self.channel(x))

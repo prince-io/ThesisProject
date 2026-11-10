@@ -35,3 +35,4 @@ Record durable thesis decisions as append-only ADRs.
 - `ADR-0008-freeze-class-weighting.md`
 - `ADR-0009-weather-gate-design.md`
 - `ADR-0010-gate-p5-design.md`
+- `ADR-0011-gate-edge-cbam-design.md`

@@ -7,8 +7,8 @@ import traceback
 from ultralytics.models.yolo.detect import DetectionTrainer
 from ultralytics.utils import LOGGER
 
-from litevit.models import wrap_gate_only, wrap_gate_p5, wrap_v1_p5
-from litevit.models.build import GATE_LAYER_INDICES, P5_LAYER_INDEX
+from litevit.models import wrap_gate_edge_cbam, wrap_gate_only, wrap_gate_p5, wrap_v1_p5
+from litevit.models.build import EDGE_LAYER_INDICES, GATE_LAYER_INDICES, P5_LAYER_INDEX
 
 
 class LiteDetectionTrainer(DetectionTrainer):
@@ -90,3 +90,15 @@ class GateP5DetectionTrainer(LiteDetectionTrainer):
 
     def _wrap_model(self, model):
         return wrap_gate_p5(model)
+
+
+class GateEdgeCBAMTrainer(LiteDetectionTrainer):
+    """Build Sobel edge + channel gate + spatial CBAM inside trainer setup."""
+
+    def _is_wrapped(self, model) -> bool:
+        return all(hasattr(model.model[i], "edge") for i in EDGE_LAYER_INDICES) and all(
+            hasattr(model.model[i], "gate") for i in GATE_LAYER_INDICES
+        )
+
+    def _wrap_model(self, model):
+        return wrap_gate_edge_cbam(model)

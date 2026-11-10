@@ -10,6 +10,7 @@ sources:
   - experiments/EXP-0003-v1-p5.md
   - experiments/EXP-0004-weather-gate.md
   - experiments/EXP-0005-gate-p5.md
+  - experiments/EXP-0006-gate-edge-cbam.md
   - results/baseline.md
   - results/ablation-comparison.md
   - findings/baseline-analysis.md
@@ -20,16 +21,24 @@ sources:
   - results/litevit_v1_p5-error-analysis.md
   - results/weather_gate.md
   - results/weather_gate-error-analysis.md
+  - results/weather-gate-tta.md
+  - results/gate_p5.md
+  - results/gate_p5-error-analysis.md
+  - results/gate-p5-comparison.md
   - results/architecture-comparison.md
   - findings/weather-gate-analysis.md
+  - findings/tta-analysis.md
+  - findings/gate-p5-analysis.md
   - decisions/ADR-0008-freeze-class-weighting.md
   - related-work/architecture-grounding.md
   - bibliography/references.bib
   - methodology/architecture.md
   - methodology/weather-gate.md
   - methodology/gate-p5.md
+  - methodology/gate-edge-cbam.md
   - decisions/ADR-0009-weather-gate-design.md
   - decisions/ADR-0010-gate-p5-design.md
+  - decisions/ADR-0011-gate-edge-cbam-design.md
 ---
 
 # Project Overview
@@ -101,8 +110,16 @@ stable for 100 epochs and night/rain plus bicycle/bus show small gains. See
 `findings/weather-gate-analysis.md`.
 
 A+B (gate + regularized P5 attention: DropPath 0.2, dropout 0.1, MLP ratio 1.0) is
-implemented and pending training (`EXP-0005`). It has 3.584 M parameters and
-9.099 GFLOPs. V2 (P4/P5 attention) is not implemented.
+complete (`EXP-0005`). It was stable but neutral on test: mAP50 0.5387 / mAP50-95
+0.3290 vs baseline 0.5428 / 0.3287 and gate-only 0.5444 / 0.3301. See
+`results/gate_p5.md` and `findings/gate-p5-analysis.md`.
+
+TTA on gate-only was worse (test mAP50 0.5329 / mAP50-95 0.3280 vs 0.5444 / 0.3301)
+and doubled inference time; it is excluded (`results/weather-gate-tta.md`).
+
+The kitchen-sink model (gate + Sobel edge + spatial CBAM, 3.204 M parameters,
+8.895 GFLOPs) is implemented and pending training (`EXP-0006`). V2 (P4/P5 attention)
+is not implemented.
 
 ## Non-goals
 
@@ -110,7 +127,7 @@ implemented and pending training (`EXP-0005`). It has 3.584 M parameters and
 
 ## Open questions
 
-- A+B (gate + regularized P5 attention) training/evaluation — pending (`EXP-0005`).
-- Multi-seed validation of gate-only/A+B — pending.
-- Multi-seed validation for final claims — pending.
-- Whether the test split should be reserved for the final model after Stage 2A reuse — pending.
+- Kitchen-sink (edge + gate + spatial CBAM) training/evaluation — pending (`EXP-0006`).
+- Whether edge-only and CBAM-only ablations are needed — pending results.
+- Multi-seed validation of gate-only/kitchen sink — pending.
+- Whether to reserve the test split for the final model after reuse — pending.
