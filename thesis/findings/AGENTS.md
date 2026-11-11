@@ -23,6 +23,8 @@ Interpret results and record lessons, conclusions, and implications for the thes
 - `v1-p5-analysis.md` interprets the completed V1 P5 experiment as a negative result.
 - `weather-gate-analysis.md` interprets the gate-only result and the next A+B step.
 - `gate-p5-analysis.md` interprets A+B as a neutral/negative attention ablation.
+- `gate-edge-cbam-analysis.md` interprets the kitchen-sink model as a neutral ablation.
+- `gate-p2-analysis.md` interprets P2 as the best test result, with modest and non-uniform gains.
 - `tta-analysis.md` records the negative TTA check.
 - Keep interpretation separate from the facts in `../results/` and cite them.
 

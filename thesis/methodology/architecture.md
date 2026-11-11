@@ -142,7 +142,7 @@ expected mAP gain are hypotheses. See
   `gate-p5.md`.
 - Kitchen sink (gate + Sobel edge + spatial CBAM) is complete as `EXP-0006`;
   see `gate-edge-cbam.md`.
-- P2 (gate-only plus a stride-4 detection head) is implemented as `EXP-0007`;
-  see `p2-head.md`.
+- P2 (gate-only plus a stride-4 detection head) is complete as `EXP-0007`;
+  see `p2-head.md` and `../results/gate_p2.md`.
 
 V2 (P4 attention) is not implemented yet.

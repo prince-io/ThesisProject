@@ -1,7 +1,7 @@
 ---
 title: Thesis Knowledge Base Index
 status: draft
-date: 2026-11-10
+date: 2026-11-11
 sources:
   - thesis/overview.md
   - thesis/experiments/README.md
@@ -15,7 +15,7 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 
 1. `overview.md` — scope, goals, constraints, open questions.
 2. `decisions/` — accepted and proposed decisions (ADRs).
-3. `methodology/` — training protocol, V1 architecture, and weather gate.
+3. `methodology/` — training protocol and architectures (V1, gate-only, P2, A+B, kitchen sink).
 4. `experiments/` — dataset record (`dataset-adverse16k.md`), datasheet (`dataset-card-adverse16k.md`), and run records.
 5. `results/` → `findings/` — facts, interpretation.
 6. `related-work/` + `bibliography/` — literature.
@@ -37,7 +37,7 @@ Authoritative curated knowledge for the thesis. Start with `overview.md`.
 - A+B (gate + regularized P5 attention) is complete (`EXP-0005`); stable but neutral on test.
 - TTA on gate-only was worse and is excluded.
 - Kitchen-sink (gate + Sobel edge + spatial CBAM, `EXP-0006`) is complete; test mAP50 0.5420 / mAP50-95 0.3295 vs gate-only 0.5444 / 0.3301.
-- P2 (gate-only + stride-4 detection head, `EXP-0007`) is implemented; training/evaluation are pending.
+- P2 (gate-only + stride-4 detection head, `EXP-0007`) is complete: test mAP50 0.5571 / mAP50-95 0.3351, the best test result.
 - V2 (P4/P5 attention) has not started.
 
 ## Field map

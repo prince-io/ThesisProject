@@ -100,6 +100,7 @@ _GPU-used and reserved values were recorded during the full training run._
 - Run config: `runs/train/gate_edge_cbam_seed42/resolved_config.yaml`
 - Error analysis: `runs/eval/gate_edge_cbam_seed42/error_analysis/`
 - Error-analysis facts: `thesis/results/gate_edge_cbam-error-analysis.md`
+- Interpretation: `thesis/findings/gate-edge-cbam-analysis.md`
 - Git commit: `f093b300ee6694fae63260d680ae60ed21a6e782`
 
 _Facts only; interpretation belongs in `thesis/findings/`._

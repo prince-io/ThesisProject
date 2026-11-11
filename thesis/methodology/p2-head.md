@@ -1,7 +1,7 @@
 ---
 title: P2 High-Resolution Detection Head
-status: draft
-date: 2026-11-10
+status: validated
+date: 2026-11-11
 sources:
   - src/litevit/models/p2.py
   - src/litevit/models/build.py
@@ -88,10 +88,10 @@ Same protocol as `EXP-0001`/`EXP-0004`:
 - 100 epochs, patience 20, seed 42, `cls_pw=0.5`
 - Mosaic 0.5, MixUp 0.05, `close_mosaic=10`
 
-Expected full-run time is **7-8 h** on the RTX 3050. A 640x640 batch-4 smoke
-run (1 epoch, 0.2% of training images) passed architecture verification, checkpoint
-reload, and half-precision final validation; peak GPU memory was **1,595 MB**. The
-full run should therefore fit the 6 GB budget with batch 4.
+The full run completed in **6.01 h** over 82 epochs (early stop). A 640x640
+batch-4 smoke run passed architecture verification, checkpoint reload, and
+half-precision final validation; peak GPU memory was **1,595 MB**. The full run
+used 3,277 MB GPU peak and fit the 6 GB budget with batch 4.
 
 ## Hypothesis and decision rule
 

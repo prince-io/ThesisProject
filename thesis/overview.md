@@ -1,7 +1,7 @@
 ---
 title: Project Overview
 status: draft
-date: 2026-11-10
+date: 2026-11-11
 sources:
   - ref/idea.md
   - experiments/dataset-adverse16k.md
@@ -28,10 +28,15 @@ sources:
   - results/gate-p5-comparison.md
   - results/gate_edge_cbam.md
   - results/gate_edge_cbam-error-analysis.md
+  - results/gate_p2.md
+  - results/gate_p2-error-analysis.md
+  - results/gate-p2-comparison.md
   - results/architecture-comparison.md
   - findings/weather-gate-analysis.md
   - findings/tta-analysis.md
   - findings/gate-p5-analysis.md
+  - findings/gate-edge-cbam-analysis.md
+  - findings/gate-p2-analysis.md
   - decisions/ADR-0008-freeze-class-weighting.md
   - related-work/architecture-grounding.md
   - bibliography/references.bib
@@ -128,8 +133,11 @@ gate-only 0.5444 / 0.3301. It is neutral overall and loses gate-only's night/rai
 gains. See `results/gate_edge_cbam.md`.
 
 The P2 model (gate-only + stride-4 detection head, 3.270 M parameters,
-13.3 GFLOPs) is implemented and pending training (`EXP-0007`). V2 (P4/P5 attention)
-is not implemented.
+13.3 GFLOPs) is complete (`EXP-0007`). It is the best test result: mAP50 0.5571 /
+mAP50-95 0.3351 vs gate-only 0.5444 / 0.3301 and baseline 0.5428 / 0.3287. The gain
+is modest and concentrated in car, motorcycle, and snow; rain and bus regress. See
+`results/gate_p2.md` and `findings/gate-p2-analysis.md`. V2 (P4/P5 attention) is
+not implemented.
 
 ## Non-goals
 
@@ -137,7 +145,4 @@ is not implemented.
 
 ## Open questions
 
-- P2 (stride-4 head on gate-only) training/evaluation — pending (`EXP-0007`).
-- Whether P2 should be gated or followed by edge/CBAM if it helps — do not stack before P2 result.
-- Multi-seed validation of gate-only and P2 — pending.
-- Whether to reserve the test split for the final model after reuse — pending.
+- V2 (P4/P5 attention) — not started.

@@ -115,5 +115,8 @@ The kitchen-sink model adds Sobel edge residuals at P3/P4 and spatial CBAM
 TTA was tested and rejected because it reduced accuracy.
 
 The P2 model adds a stride-4 detection level to gate-only (`EXP-0007`); see
-`thesis/methodology/p2-head.md` and `thesis/decisions/ADR-0012-p2-head-design.md`.
-This is a resolution hypothesis for tiny objects, not another attention module.
+`thesis/methodology/p2-head.md`, `thesis/results/gate_p2.md`, and
+`thesis/decisions/ADR-0012-p2-head-design.md`. It is the best test result
+(+1.27 pp mAP50 and +0.50 pp mAP50-95 over gate-only) but the gain is modest,
+non-uniform, and single-seed. It is a resolution result, not evidence for another
+attention module.

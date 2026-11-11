@@ -15,7 +15,7 @@
 - V1 (P5-only LiteViT) is complete (`EXP-0003`): it early-stopped at epoch 38, best epoch 18, and underperformed the baseline on test.
 - Gate-only weather adaptation (L-WG on P3/P4/P5, `EXP-0004`) is complete: test mAP50 0.5444 / mAP50-95 0.3301 vs baseline 0.5428 / 0.3287; validation is slightly lower but training is stable.
 - A+B (gate + regularized P5 attention, `EXP-0005`) is complete: stable but neutral on test (mAP50 0.5387 / mAP50-95 0.3290 vs baseline 0.5428 / 0.3287 and gate-only 0.5444 / 0.3301). TTA was worse and is excluded.
-- Kitchen-sink (gate + Sobel edge + spatial CBAM, `EXP-0006`) is complete: test mAP50 0.5420 / mAP50-95 0.3295 vs gate-only 0.5444 / 0.3301; neutral overall. P2 (gate-only + stride-4 head, `EXP-0007`) is implemented; training/evaluation are pending. V2 (P4/P5 attention) has not started.
+- Kitchen-sink (gate + Sobel edge + spatial CBAM, `EXP-0006`) is complete: test mAP50 0.5420 / mAP50-95 0.3295 vs gate-only 0.5444 / 0.3301; neutral overall. P2 (gate-only + stride-4 head, `EXP-0007`) is complete: test mAP50 0.5571 / mAP50-95 0.3351, the best test result; gains are concentrated in car, motorcycle, and snow. V2 (P4/P5 attention) has not started.
 
 ## Core Contract
 

@@ -26,7 +26,7 @@ Hold measured outcomes as facts: metrics, tables, and comparisons tied to a run 
 - Cross-variant facts: `architecture-comparison.md`.
 - A+B facts: `gate_p5.md`, `gate_p5-error-analysis.md`, and `gate-p5-comparison.md` (EXP-0005).
 - Kitchen-sink facts: `gate_edge_cbam.md` and `gate_edge_cbam-error-analysis.md` (EXP-0006); test mAP50 0.5420 / mAP50-95 0.3295.
-- P2 results will be generated to `gate_p2.md` when `EXP-0007` completes.
+- P2 facts: `gate_p2.md`, `gate_p2-error-analysis.md`, and `gate-p2-comparison.md` (EXP-0007).
 - TTA facts: `weather-gate-tta.md`.
 - Raw error-analysis data stays in `runs/eval/<run>/error_analysis/`.
 - Curated figures live in `thesis/results/figures/`; full plots stay in `runs/`.

@@ -23,8 +23,8 @@ training is stable. A+B (gate + regularized P5 attention, `EXP-0005`) is complet
 test. TTA was worse and is excluded. Kitchen-sink (gate + Sobel edge + spatial
 CBAM, `EXP-0006`) is complete: test mAP50 0.5420 / mAP50-95 0.3295 vs gate-only
 0.5444 / 0.3301; neutral overall. P2 (gate-only + stride-4 detection head,
-`EXP-0007`) is implemented; training/evaluation are pending. V2/V3 attention work
-has not started.
+`EXP-0007`) is complete: test mAP50 0.5571 / mAP50-95 0.3351, the best test result.
+V2/V3 attention work has not started.
 
 ## Code layout
 
@@ -316,7 +316,8 @@ No P5 attention. Total: 3,203,704 parameters and 8.895 GFLOPs. See
 
 Gate-only plus a stride-4 P2/P3/P4/P5 detection head. P2 branch: upsample P3,
 concatenate backbone P2, C2f to 32 channels. No attention, edge, CBAM, or TTA.
-Total: 3,270,388 parameters and 13.3 GFLOPs. See
+Total: 3,270,388 parameters and 13.3 GFLOPs. Best test result: mAP50 0.5571 /
+mAP50-95 0.3351. See
 `thesis/methodology/p2-head.md` and
 `thesis/experiments/EXP-0007-gate-p2.md`.
 
